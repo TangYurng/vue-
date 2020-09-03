@@ -172,7 +172,7 @@ export default {
       this.filters = !this.filters;
     },
     clicksort(){
-      console.log(this.$refs.showsort.firstChild.)
+      console.log(this.$refs.showsort.firstChild)
     }
   },
   created() {},
