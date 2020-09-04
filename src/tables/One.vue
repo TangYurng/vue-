@@ -39,7 +39,7 @@
           </ul>
         </div>
       </div>
-      <my-table style="width:1500px;height:200px" :header="header" :body="body" ShowCheckbox :stripe="true" ></my-table>
+      <my-table  :header="header" :body="body" ShowCheckbox :stripe="true" ></my-table>
     </div>
     
   </div>
@@ -60,8 +60,8 @@ export default {
     return {
       RecordNum: 263,
       header: [
-        { value: "状态", width: 75, key: "value1" ,showfilter:true,groupname:'qq'},
-        { value: "入库通知单", width: 165, key: "value2",showsort:true,groupname:'qq'},
+        { value: "状态", width: 75, key: "value1" ,showfilter:true,groupname:'qq',fixed:true},
+        { value: "入库通知单", width: 165, key: "value2",showsort:true,groupname:'qq',fixed:true},
         { value: "合同编号", width: 112, key: "value3" },
         { value: "采购订单", width: 157, key: "value4" },
         { value: "承运商", width: 85, key: "value5" },
@@ -72,7 +72,7 @@ export default {
         { value: "押运员	", width: 110, key: "value10" },
         { value: "押运员1	", width: 110, key: "value11" },
         { value: "押运员2	", width: 110, key: "value12" },
-        { value: "押运员3	", width: 110, key: "value13" },
+        { value: "押运员3	", width: 110, key: "value13",fixed:'right' },
       ],
       body: [
           {
@@ -199,7 +199,7 @@ a {
   color: #4e546c;
 }
 .wrap {
-  width: 100%;
+  width: 1500px;
   margin: 0 auto;
 }
 .tab-head {

@@ -1,10 +1,115 @@
 <template>
   <div class="table" ref="mytable">
     <div class="content">
-      <div class="tab-fixed-left"></div>
+      <div class="tab-fixed-left">
+        <div class="header">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :style="{width: setwidth}"
+            ref="tabheader"
+          >
+            <colgroup>
+              <col v-if="ShowCheckbox" style="width: 36px;" />
+              <col
+                v-for="(cell, colIndex) in fixedheader"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <thead>
+              <tr :style="{height: HeaderHeight + 'px'}">
+                <th v-if="ShowCheckbox" class="checkbox">
+                  <input type="checkbox" />
+                </th>
+                <th v-for="(cell, colIndex) in fixedheader" :key="colIndex">
+                  <div class="headerdiv">
+                    <span>{{cell.value}}</span>
+                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
+                      <span class="caret-wrapper" @click="cilckfilter($event)">
+                        <i class="filter-caret filtertop"></i>
+                        <i class="filterbottom"></i>
+                      </span>
+                      <div v-if="filters" class="filters">
+                        <ul>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <span>重置</span>
+                            <span>确认</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
+                      <span class="caret-wrapper">
+                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
+                        <i class="sort-caret descending" @click="clicksort($event)"></i>
+                      </span>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="body">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :class="{'isstripe':stripe}"
+            :style="{width: setwidth}"
+            ref="tabbody"
+          >
+            <colgroup>
+              <col v-if="ShowCheckbox" style="width: 36px;" />
+              <col
+                v-for="(cell, colIndex) in fixedheader"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <tbody>
+              <tr
+                v-for="(row, rowIndex) in fixedbody"
+                :key="rowIndex"
+                :style="{height: BodyHeight + 'px'}"
+                ref="bodytr"
+              >
+                <td v-if="ShowCheckbox" class="checkbox">
+                  <input type="checkbox" />
+                </td>
+                <td v-for="(cell,colIndex) in row" :key="colIndex">
+                  <div>
+                    <span>{{cell}}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div class="tab-scroll">
         <div class="header">
-          <table cellspacing="0" cellpadding="0" border="0" :style="{width: setwidth}">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :style="{width: setwidth}"
+            ref="tabheader"
+          >
             <colgroup>
               <col v-if="ShowCheckbox" style="width: 36px;" />
               <col
@@ -41,15 +146,16 @@
                             <span>已确认</span>
                           </li>
                           <li>
-                            <span>重置</span><span>确认</span>
+                            <span>重置</span>
+                            <span>确认</span>
                           </li>
                         </ul>
                       </div>
                     </div>
                     <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper" @click="clicksort">
-                        <i class="sort-caret ascending"></i>
-                        <i class="sort-caret descending"></i>
+                      <span class="caret-wrapper">
+                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
+                        <i class="sort-caret descending" @click="clicksort($event)"></i>
                       </span>
                     </div>
                   </div>
@@ -65,6 +171,7 @@
             border="0"
             :class="{'isstripe':stripe}"
             :style="{width: setwidth}"
+            ref="tabbody"
           >
             <colgroup>
               <col v-if="ShowCheckbox" style="width: 36px;" />
@@ -106,6 +213,8 @@ export default {
     return {
       setwidth: "auto",
       filters: false,
+      fixedheader: [],
+      fixedbody: [],
     };
   },
   props: {
@@ -119,6 +228,12 @@ export default {
       type: Array,
       default: () => {
         return [];
+      },
+    },
+    fixed: {
+      type: Array,
+      default: () => {
+        return [false, "left"];
       },
     },
     HeaderHeight: {
@@ -138,14 +253,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    // showfilter: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // showsort: {
-    //   type: Boolean,
-    //   default: false,
-    // },
     width: [String, Number],
     height: [String, Number],
   },
@@ -167,17 +274,52 @@ export default {
         this.setwidth = "100%";
       }
     },
+    init() {
+      let fheader = [],
+        fbody = [],
+        headerkey = [],
+        rightkey=[];
+      Array.from(this.header).forEach((item) => {
+        if (item.fixed != null || item.fixed != undefined) {
+          if(item.fixed == true ||item.fixed == 'left'){
+            headerkey.push(item.key);
+          }
+          else if(item.fixed == 'right'){
+            rightkey.push(item.key);
+          }
+          fheader.push(item);
+        }
+      });
+      setTimeout(() => {
+        Array.from(this.body).forEach((item) => {
+          let data = [];
+          headerkey.forEach((el) => {
+            for (var al in item) {
+              if (al == el) {
+                console.log(item[al]);
+                data.push(item[al]);
+              }
+            }
+          });
+          fbody.push(data);
+        });
+      });
+      this.fixedheader = fheader;
+      this.fixedbody = fbody;
+      // console.log(this.fixedbody);
+      console.log(rightkey)
+    },
     cilckfilter(e) {
       console.log(e);
       this.filters = !this.filters;
     },
-    clicksort(){
-      console.log(this.$refs.showsort.firstChild)
-    }
+    clicksort(sort) {
+      console.log(sort);
+    },
   },
   created() {},
   mounted() {
-    console.log(this.header);
+    this.init();
     // 斑马纹
     if (this.stripe) {
       this.$refs.bodytr.forEach((item, index) => {
@@ -192,6 +334,11 @@ export default {
     } else {
       window.removeEventListener("resize", this.initTableWidth);
     }
+  },
+  watch: {
+    data() {
+      this.init();
+    },
   },
 };
 </script>
@@ -279,27 +426,32 @@ li {
   box-shadow: 0px 2px 4px;
   background: #fff;
 }
-.filters li{
+.filters li {
   padding: 4px 10px;
   margin-bottom: 5px;
 }
-.filters li:last-child{
-  border-top: 1px solid #000;
+.filters li:last-child {
+  border-top: 1px solid #c1c1c1;
 }
-.filters .line{
+.filters .line {
   width: 100%;
   height: 1px;
   background: #000;
 }
-.filters input{
+.filters input {
   margin-right: 8px;
 }
-.filters span{
+.filters span {
   color: #353944;
   font-size: 13px;
   font-weight: normal;
   padding-left: 5px;
   padding-right: 15px;
+}
+.filters li:last-child span {
+  color: #5498ff;
+  font-size: 12px;
+  cursor: pointer;
 }
 .body {
   color: #353944;
