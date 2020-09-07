@@ -196,7 +196,7 @@ export default {
         "scroll",
         function (e) {
           // 监听表格容器的滚动事件
-          // console.log(e);
+          console.log(e);
           let currentScrollTop = e.target.scrollTop;
           let tableScrollBL = tableBL.getElementsByClassName(
             "table_scroll_box"

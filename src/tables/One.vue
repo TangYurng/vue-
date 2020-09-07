@@ -39,7 +39,8 @@
           </ul>
         </div>
       </div>
-      <my-table  :header="header" :body="body" ShowCheckbox :stripe="true" ></my-table>
+      <!-- ShowCheckbox:显示多选框  ,stripe:显示斑马纹 -->
+      <my-table  :header="header" :body="body" :isgroup="isgroup" ></my-table>
     </div>
     
   </div>
@@ -60,19 +61,19 @@ export default {
     return {
       RecordNum: 263,
       header: [
-        { value: "状态", width: 75, key: "value1" ,showfilter:true,groupname:'qq',fixed:true},
-        { value: "入库通知单", width: 165, key: "value2",showsort:true,groupname:'qq',fixed:true},
+        { value: "状态", width: 75, key: "value1" ,showfilter:true},
+        { value: "入库通知单", width: 165, key: "value2",showsort:true},
         { value: "合同编号", width: 112, key: "value3" },
         { value: "采购订单", width: 157, key: "value4" },
-        { value: "承运商", width: 85, key: "value5" },
-        { value: "客户", width: 172, key: "value6" ,showfilter:true},
+        { value: "承运商", width: 85, key: "value5" ,groupname:"人员"},
+        { value: "客户", width: 172, key: "value6" ,showfilter:true,groupname:"人员"},
         { value: "计划装车日期", width: 330, key: "value7" },
         { value: "二级客户", width: 85, key: "value8" },
         { value: "驾驶员	", width: 90, key: "value9" },
-        { value: "押运员	", width: 110, key: "value10" },
-        { value: "押运员1	", width: 110, key: "value11" },
-        { value: "押运员2	", width: 110, key: "value12" },
-        { value: "押运员3	", width: 110, key: "value13",fixed:'right' },
+        { value: "押运员	", width: 110, key: "value10" ,groupname:"押运员"},
+        { value: "押运员1	", width: 110, key: "value11" ,groupname:"押运员"},
+        { value: "押运员2	", width: 110, key: "value12" ,groupname:"押运员"},
+        { value: "押运员3	", width: 110, key: "value13",groupname:"押运员"},
       ],
       body: [
           {
@@ -166,8 +167,9 @@ export default {
             value13: "刘航",
           },
       ],
-      group:[
-        {groupname:'qq',groupkey:1}
+      isgroup:[
+        {groupname:'押运员',groupkey:'yayun'},
+        {groupname:'人员',groupkey:'man'}
       ]
     };
   },
@@ -200,6 +202,7 @@ a {
 }
 .wrap {
   width: 1500px;
+  height: 200px;
   margin: 0 auto;
 }
 .tab-head {

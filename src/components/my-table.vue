@@ -2,12 +2,12 @@
   <div class="table" ref="mytable">
     <div class="content">
       <div class="tab-fixed-left">
-        <div class="header">
+        <div class="leftheader">
           <table
             cellspacing="0"
             cellpadding="0"
             border="0"
-            :style="{width: setwidth}"
+            :style="{width: leftsetwidth}"
             ref="tabheader"
           >
             <colgroup>
@@ -64,13 +64,13 @@
             </thead>
           </table>
         </div>
-        <div class="body">
+        <div class="leftbody">
           <table
             cellspacing="0"
             cellpadding="0"
             border="0"
             :class="{'isstripe':stripe}"
-            :style="{width: setwidth}"
+            :style="{width: leftsetwidth}"
             ref="tabbody"
           >
             <colgroup>
@@ -119,7 +119,7 @@
               />
             </colgroup>
             <thead>
-              <tr :style="{height: HeaderHeight + 'px'}">
+              <tr :style="{height: HeaderHeight + 'px'}" v-if="!isgroup[0]">
                 <th v-if="ShowCheckbox" class="checkbox">
                   <input type="checkbox" />
                 </th>
@@ -201,7 +201,98 @@
           </table>
         </div>
       </div>
-      <div class="tab-fixed-right"></div>
+      <div class="tab-fixed-right">
+        <div class="rightheader">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :style="{width: rightsetwidth}"
+            ref="tabheader"
+          >
+            <colgroup>
+              <col
+                v-for="(cell, colIndex) in rfixedheader"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <thead>
+              <tr :style="{height: HeaderHeight + 'px'}">
+                <th v-for="(cell, colIndex) in rfixedheader" :key="colIndex">
+                  <div class="headerdiv">
+                    <span>{{cell.value}}</span>
+                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
+                      <span class="caret-wrapper" @click="cilckfilter($event)">
+                        <i class="filter-caret filtertop"></i>
+                        <i class="filterbottom"></i>
+                      </span>
+                      <div v-if="filters" class="filters">
+                        <ul>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <input type="checkbox" name id />
+                            <span>已确认</span>
+                          </li>
+                          <li>
+                            <span>重置</span>
+                            <span>确认</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
+                      <span class="caret-wrapper">
+                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
+                        <i class="sort-caret descending" @click="clicksort($event)"></i>
+                      </span>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="rightbody">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :class="{'isstripe':stripe}"
+            :style="{width: rightsetwidth}"
+            ref="tabbody"
+          >
+            <colgroup>
+              <col
+                v-for="(cell, colIndex) in rfixedheader"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <tbody>
+              <tr
+                v-for="(row, rowIndex) in rfixedbody"
+                :key="rowIndex"
+                :style="{height: BodyHeight + 'px'}"
+                ref="bodytr"
+              >
+                <td v-for="(cell,colIndex) in row" :key="colIndex">
+                  <div>
+                    <span>{{cell}}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -212,9 +303,13 @@ export default {
   data() {
     return {
       setwidth: "auto",
+      leftsetwidth: "auto",
+      rightsetwidth: "auto",
       filters: false,
       fixedheader: [],
       fixedbody: [],
+      rfixedheader: [],
+      rfixedbody: [],
     };
   },
   props: {
@@ -230,10 +325,12 @@ export default {
         return [];
       },
     },
-    fixed: {
+    isgroup: {
       type: Array,
       default: () => {
-        return [false, "left"];
+        return [
+          false
+        ];
       },
     },
     HeaderHeight: {
@@ -259,55 +356,95 @@ export default {
   methods: {
     // 表格初始化宽度
     initTableWidth() {
-      let allwidth = 0;
-      if (!this.ShowCheckbox) {
-        this.ShowCheckbox = 0;
-      } else {
-        allwidth += 50;
+      let allwidth = 0,
+        leftallwidth = 0,
+        rightallwidth = 0;
+      if (this.ShowCheckbox)  {
+        let num = 0;
+        this.header.forEach((el) => {
+          if (!el.fixed) {
+            num++;
+          }
+        });
+        allwidth += 35;
+        leftallwidth += 35;
+        if (num >= this.header.length) {
+          document.getElementsByClassName("tab-fixed-left")[0].style.display =
+            "none";
+          document.getElementsByClassName("tab-fixed-right")[0].style.display =
+            "none";
+        } else {
+          document.getElementsByClassName("tab-fixed-left")[0].style.display =
+            "block";
+          document.getElementsByClassName("tab-fixed-right")[0].style.display =
+            "block";
+        }
       }
       this.header.forEach((el) => {
         allwidth += el.width;
       });
+      this.fixedheader.forEach((el) => {
+        console.log(el.width);
+        leftallwidth += el.width;
+      });
+      this.rfixedheader.forEach((el) => {
+        rightallwidth += el.width;
+      });
       if (allwidth > this.$refs.mytable.offsetWidth) {
         this.setwidth = allwidth + "px";
+        this.leftsetwidth = leftallwidth + "px";
+        this.rightsetwidth = rightallwidth + "px";
       } else {
         this.setwidth = "100%";
+        this.leftsetwidth = "100%";
+        this.rightsetwidth = "100%";
       }
     },
+    //表格数据
     init() {
       let fheader = [],
+        frheader = [],
         fbody = [],
+        frbody = [],
         headerkey = [],
-        rightkey=[];
+        rightkey = [];
       Array.from(this.header).forEach((item) => {
         if (item.fixed != null || item.fixed != undefined) {
-          if(item.fixed == true ||item.fixed == 'left'){
+          if (item.fixed == true || item.fixed == "left") {
             headerkey.push(item.key);
-          }
-          else if(item.fixed == 'right'){
+            fheader.push(item);
+          } else if (item.fixed == "right") {
             rightkey.push(item.key);
+            frheader.push(item);
           }
-          fheader.push(item);
         }
       });
       setTimeout(() => {
         Array.from(this.body).forEach((item) => {
-          let data = [];
+          let data1 = [],
+            data2 = [];
           headerkey.forEach((el) => {
             for (var al in item) {
               if (al == el) {
-                console.log(item[al]);
-                data.push(item[al]);
+                data1.push(item[al]);
               }
             }
           });
-          fbody.push(data);
+          rightkey.forEach((el) => {
+            for (var al in item) {
+              if (al == el) {
+                data2.push(item[al]);
+              }
+            }
+          });
+          fbody.push(data1);
+          frbody.push(data2);
         });
       });
       this.fixedheader = fheader;
       this.fixedbody = fbody;
-      // console.log(this.fixedbody);
-      console.log(rightkey)
+      this.rfixedheader = frheader;
+      this.rfixedbody = frbody;
     },
     cilckfilter(e) {
       console.log(e);
@@ -334,6 +471,40 @@ export default {
     } else {
       window.removeEventListener("resize", this.initTableWidth);
     }
+    // 滚动监视
+    this.$nextTick(() => {
+      this.init();
+      let table = document.querySelector(".table");
+      table.addEventListener(
+        "scroll",
+        function (e) {
+          // 监听表格容器的滚动事件
+          let currentScrollTop = e.target.scrollLeft;
+          let leftbody = table.getElementsByClassName("tab-fixed-left");
+          let rightbody = table.getElementsByClassName("tab-fixed-right");
+          leftbody[0].style.left = currentScrollTop + "px";
+          rightbody[0].style.right = -currentScrollTop + "px";
+        },
+        false
+      );
+      // if (this.height.endsWith("%")) {
+      //   // 如果是以100%结尾的
+      //   this.heights = this.height;
+      // }
+      // if (this.height !== "") {
+      //   // 如果是传入实际高度值的
+      //   this.heights = this.height + "px";
+      // }
+      // if (this.heights === "") {
+      //   this.initial();
+      //   let _this = this;
+      //   window.onresize = function () {
+      //     _this.initial();
+      //   };
+      // }
+    });
+    console.log(this.header)
+    console.log("isgroup",this.isgroup)
   },
   watch: {
     data() {
@@ -362,15 +533,42 @@ li {
   font-size: 14px;
   color: #606266;
 }
-.header {
+.content {
+  position: relative;
+}
+.tab-fixed-left {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0px;
+  background: #fff;
+  z-index: 10;
+  box-shadow: 2px 0px 6px #000;
+}
+.tab-fixed-right {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  background: #fff;
+  z-index: 10;
+  box-shadow: -2px 0px 6px #000;
+}
+.header,
+.leftheader,
+.rightheader {
   color: #4e546c;
   font-size: 14px;
   font-weight: bold;
 }
-.header tr {
+.header tr,
+.leftheader tr,
+.rightheader tr {
   background-color: #e4eafa;
 }
-.header th:nth-child(n + 2) {
+.header th:nth-child(n + 2),
+.leftheader th:nth-child(n + 2),
+.rightheader th:nth-child(n + 2) {
   border-left: 1px solid #e6e6e6;
 }
 .caret-wrapper {
@@ -453,14 +651,20 @@ li {
   font-size: 12px;
   cursor: pointer;
 }
-.body {
+.body,
+.leftbody,
+.rightbody {
   color: #353944;
   font-size: 13px;
 }
-.body td:nth-child(n + 2) {
+.body td:nth-child(n + 2),
+.leftbody td:nth-child(n + 2),
+.rightbody td:nth-child(n + 2) {
   border-left: 1px dashed #e9e9e9;
 }
-.body td {
+.body td,
+.leftbody td,
+.rightbody td {
   cursor: pointer;
 }
 </style>
