@@ -119,7 +119,8 @@
               />
             </colgroup>
             <thead>
-              <tr :style="{height: HeaderHeight + 'px'}" v-if="!isgroup[0]">
+              <!-- 正常表头 -->
+              <tr :style="{height: HeaderHeight + 'px'}" v-if="!showgroup">
                 <th v-if="ShowCheckbox" class="checkbox">
                   <input type="checkbox" />
                 </th>
@@ -158,6 +159,26 @@
                         <i class="sort-caret descending" @click="clicksort($event)"></i>
                       </span>
                     </div>
+                  </div>
+                </th>
+              </tr>
+              <!-- 一级表头 -->
+              <tr :style="{height: HeaderHeight + 'px'}" v-if="showgroup" ref="primarytr">
+                <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
+                  <input type="checkbox" />
+                </th>
+                <th v-for="(cell, colIndex) in primary" :key="colIndex">
+                  <div class="headerdiv">
+                    <span v-if="cell.groupname">{{cell.groupname}}</span>
+                    <span v-else>{{cell.value}}</span>
+                  </div>
+                </th>
+              </tr>
+              <!-- 二级表头 -->
+              <tr v-if="showgroup">
+                <th v-for="(cell,colIndex) in secondary" :key="colIndex">
+                  <div>
+                    <span>{{cell.value}}</span>
                   </div>
                 </th>
               </tr>
@@ -299,7 +320,7 @@
 
 <script>
 export default {
-  name: "Three",
+  name: "MyTable",
   data() {
     return {
       setwidth: "auto",
@@ -310,6 +331,9 @@ export default {
       fixedbody: [],
       rfixedheader: [],
       rfixedbody: [],
+      showgroup: false,
+      primary: [],
+      secondary: [],
     };
   },
   props: {
@@ -328,9 +352,7 @@ export default {
     isgroup: {
       type: Array,
       default: () => {
-        return [
-          false
-        ];
+        return [false];
       },
     },
     HeaderHeight: {
@@ -359,7 +381,7 @@ export default {
       let allwidth = 0,
         leftallwidth = 0,
         rightallwidth = 0;
-      if (this.ShowCheckbox)  {
+      if (this.ShowCheckbox) {
         let num = 0;
         this.header.forEach((el) => {
           if (!el.fixed) {
@@ -384,7 +406,6 @@ export default {
         allwidth += el.width;
       });
       this.fixedheader.forEach((el) => {
-        console.log(el.width);
         leftallwidth += el.width;
       });
       this.rfixedheader.forEach((el) => {
@@ -446,6 +467,54 @@ export default {
       this.rfixedheader = frheader;
       this.rfixedbody = frbody;
     },
+    //多表头
+    initGroup() {
+      if (this.isgroup.length != 0) {
+        this.showgroup = true;
+      }
+      Array.from(this.header).forEach((el, index) => {
+        if (el.groupname != undefined || el.groupname != null) {
+          this.secondary.push(el);
+          if (
+            this.header[index].groupname == this.header[index - 1].groupname
+          ) {
+            return;
+          }
+        }
+        this.primary.push(el);
+      });
+      let count = 0;
+      Array.from(this.isgroup).forEach((al) => {
+        Array.from(this.header).forEach((el) => {
+          if (al.groupname == el.groupname) {
+            count++;
+          }
+        });
+        al.spannum = count;
+        count = 0;
+      });
+      console.log("isgroup", this.isgroup);
+      this.$nextTick(() => {
+        Array.from(this.primary).forEach((el, index) => {
+          if (el.groupname != undefined || el.groupname != null) {
+            Array.from(this.isgroup).forEach((al) => {
+              if (el.groupname == al.groupname) {
+                el.spannum = al.spannum;
+              }
+            });
+            this.$refs.primarytr.cells[index].style.colspan = el.spannum;
+            this.$refs.primarytr.cells[index].style.height = (this.HeaderHeight)/2+'px';
+            console.log( this.$refs.primarytr.cells[index].colspan, this.$refs.primarytr.cells[index].colspan);
+          } else {
+            this.$refs.primarytr.cells[index].rowspan = 2;
+            console.log( this.$refs.primarytr.cells[index], this.$refs.primarytr.cells[index].rowspan);
+          }
+        });
+      });
+
+      console.log("一级表头", this.primary);
+      console.log("二级表头", this.secondary);
+    },
     cilckfilter(e) {
       console.log(e);
       this.filters = !this.filters;
@@ -457,6 +526,7 @@ export default {
   created() {},
   mounted() {
     this.init();
+    this.initGroup();
     // 斑马纹
     if (this.stripe) {
       this.$refs.bodytr.forEach((item, index) => {
@@ -487,24 +557,7 @@ export default {
         },
         false
       );
-      // if (this.height.endsWith("%")) {
-      //   // 如果是以100%结尾的
-      //   this.heights = this.height;
-      // }
-      // if (this.height !== "") {
-      //   // 如果是传入实际高度值的
-      //   this.heights = this.height + "px";
-      // }
-      // if (this.heights === "") {
-      //   this.initial();
-      //   let _this = this;
-      //   window.onresize = function () {
-      //     _this.initial();
-      //   };
-      // }
     });
-    console.log(this.header)
-    console.log("isgroup",this.isgroup)
   },
   watch: {
     data() {
