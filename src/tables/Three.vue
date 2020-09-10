@@ -1,21 +1,21 @@
 <template>
   <div class="table">
-    <!-- <vue-table :tdata="tableData" :tcolumns="tableColumns" :showHandle="true" :tdHeight="40" selectFixed handleFixed>
-      <template slot="operations" scope="scope">
+    <vue-table :tdata="tableData" :showSelect="true" :tcolumns="tableColumns" :showHandle="true" :tdHeight="40" selectFixed handleFixed>
+      <template slot="operations" slot-scope="scope">
         <span @click="edit(scope.item)">编辑</span>
         <span @click="edit(scope.item)">删除</span>
         <span @click="edit(scope.item)">禁用</span>
       </template>
-    </vue-table> -->
+    </vue-table>
   </div>
 </template>
 
 <script>
-// import VueTable from "../components/vue-table";
+import VueTable from "../components/vue-table";
 export default {
   name: "Three",
   components: {
-    // VueTable,
+    VueTable,
   },
   data() {
     return {

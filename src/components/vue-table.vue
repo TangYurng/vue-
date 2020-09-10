@@ -73,7 +73,8 @@
       >
         <div
           class="table-header"
-          :style="titleFixed == 'fixed' ? {width: tableContentWith + 'px', position: 'absolute',overflow:'hidden'}: {}"
+          :style="titleFixed == 'fixed' ? {width: 
+           + 'px', position: 'absolute',overflow:'hidden'}: {}"
         >
           <table class="scroll-header" :style="{width: setWithd}" ref="cHead">
             <colgroup>
@@ -493,7 +494,8 @@ export default {
           num += 1;
         }
       });
-      if (val.length !== num) {
+      if (
+        val.length !== num) {
         this.checkedAll = false;
       } else {
         this.checkedAll = true;

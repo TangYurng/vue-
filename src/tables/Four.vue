@@ -1,8 +1,8 @@
 <template>
   <hz-table :data="list">
     <hz-table-item slot="head">
-      <hz-table-column width="40" text-align="center" fixed>#</hz-table-column>
-      <hz-table-column width="80" fixed border-right="1">标准1</hz-table-column>
+      <hz-table-column width="40" text-align="center" >#</hz-table-column>
+      <hz-table-column width="80"  border-right="1">标准1</hz-table-column>
       <hz-table-column width="100">标准2</hz-table-column>
       <hz-table-column width="80">标准3</hz-table-column>
 
@@ -14,8 +14,8 @@
       <hz-table-column border-right="1">标准9</hz-table-column>
     </hz-table-item>
     <hz-table-item slot="body" v-for="(item,index) in list" :key="index">
-      <hz-table-column class="serialNumber" width="40" text-align="center" fixed>{{index+1}}</hz-table-column>
-      <hz-table-column width="80" fixed border-right="1">{{item.a}}</hz-table-column>
+      <hz-table-column class="serialNumber" width="40" text-align="center" >{{index+1}}</hz-table-column>
+      <hz-table-column width="80"  border-right="1">{{item.a}}</hz-table-column>
       <hz-table-column width="100">{{item.b}}</hz-table-column>
       <hz-table-column width="80" class="overflowHiddenEllipsis">{{item.s}}</hz-table-column>
 
@@ -23,12 +23,13 @@
       <hz-table-column width="165" border-right="1">{{item.r}}</hz-table-column>
       <hz-table-column border-right="1">{{item.f}}</hz-table-column>
       <hz-table-column border-right="1" width="196">{{item.h}}</hz-table-column>
+      
+      <hz-table-column border-right="1">{{item.f}}</hz-table-column>
       <hz-table-column width="180">
         <button @click="detailEvent(item)">详情</button>
         <button @click="editEvent(item)">修改</button>
         <button @click="deleteEvent(item)">删除</button>
       </hz-table-column>
-      <hz-table-column border-right="1">{{item.f}}</hz-table-column>
     </hz-table-item>
   </hz-table>
 </template>

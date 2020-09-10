@@ -21,7 +21,7 @@
             <thead>
               <tr :style="{height: HeaderHeight + 'px'}">
                 <th v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" />
+                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
                 </th>
                 <th v-for="(cell, colIndex) in fixedheader" :key="colIndex">
                   <div class="headerdiv">
@@ -89,7 +89,7 @@
                 ref="bodytr"
               >
                 <td v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" />
+                  <input type="checkbox" @click="checkedItem" :checked="CheckedItem" />
                 </td>
                 <td v-for="(cell,colIndex) in row" :key="colIndex">
                   <div>
@@ -110,7 +110,7 @@
             :style="{width: setwidth}"
             ref="tabheader"
           >
-            <colgroup>
+            <colgroup class="headercg">
               <col v-if="ShowCheckbox" style="width: 36px;" />
               <col
                 v-for="(cell, colIndex) in header"
@@ -120,9 +120,9 @@
             </colgroup>
             <thead>
               <!-- 正常表头 -->
-              <tr :style="{height: HeaderHeight + 'px'}" v-if="!showgroup">
+              <tr :style="{height: HeaderHeight + 'px'}" v-if="!showgroup" ref="headertr">
                 <th v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" />
+                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
                 </th>
                 <th v-for="(cell, colIndex) in header" :key="colIndex">
                   <div class="headerdiv">
@@ -163,9 +163,9 @@
                 </th>
               </tr>
               <!-- 一级表头 -->
-              <tr :style="{height: HeaderHeight + 'px'}" v-if="showgroup" ref="primarytr">
+              <tr v-if="showgroup" ref="primarytr">
                 <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
-                  <input type="checkbox" />
+                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
                 </th>
                 <th v-for="(cell, colIndex) in primary" :key="colIndex">
                   <div class="headerdiv">
@@ -194,7 +194,7 @@
             :style="{width: setwidth}"
             ref="tabbody"
           >
-            <colgroup>
+            <colgroup class="bodycg">
               <col v-if="ShowCheckbox" style="width: 36px;" />
               <col
                 v-for="(cell, colIndex) in header"
@@ -210,7 +210,7 @@
                 ref="bodytr"
               >
                 <td v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" />
+                  <input type="checkbox" :checked="CheckedItem" @click="checkedItem" />
                 </td>
                 <td v-for="(cell,colIndex) in header" :key="colIndex">
                   <div>
@@ -334,6 +334,8 @@ export default {
       showgroup: false,
       primary: [],
       secondary: [],
+      CheckedALL: false,
+      CheckedItem: false,
     };
   },
   props: {
@@ -372,6 +374,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    resize: {
+      type: Boolean,
+      default: false,
+    },
     width: [String, Number],
     height: [String, Number],
   },
@@ -390,6 +396,7 @@ export default {
         });
         allwidth += 35;
         leftallwidth += 35;
+        //判断是否显示左右固定列
         if (num >= this.header.length) {
           document.getElementsByClassName("tab-fixed-left")[0].style.display =
             "none";
@@ -420,26 +427,92 @@ export default {
         this.leftsetwidth = "100%";
         this.rightsetwidth = "100%";
       }
+      if (this.resize) {
+        console.log("表格可变化");
+        this.$refs.headertr.cells.forEach((el, index) => {
+          let th = el;
+          //记录宽度
+          //开始,按下
+          el.onmousedown = function () {
+            if (event.offsetX > this.offsetWidth - 10) {
+              th.mouseDown = true;
+              th.startX = event.x;
+              th.firstW = th.offsetWidth;
+              console.log("start", th.startX);
+            }
+          };
+          //结束，松开
+          el.onmouseup = function () {
+            if (th == undefined) th = this;
+            th.mouseDown = false;
+            this.style.cursor = "default";
+          };
+          el.onmousemove = function () {
+            //设置样式col-resize
+            if (event.offsetX > this.offsetWidth - 10) {
+              this.style.cursor = "col-resize";
+            } else {
+              this.style.cursor = "default";
+            }
+            if (th == undefined) th = this;
+            //调整宽度
+            if (th.mouseDown != null && th.mouseDown == true) {
+              th.style.cursor = "default";
+              console.log("end", event.x);
+              if (th.firstW + (event.x - th.startX) > 0) {
+                th.width = th.firstW + (event.x - th.startX) + "px";
+              } else if (th.firstW + (event.x - th.startX) < 10)
+                th.width = "10px";
+              th.style.cursor = "col-resize";
+              //调整th的colgroup
+              let headercg = document.querySelectorAll(".headercg col");
+              headercg[index].style.width = th.width;
+              //调整列宽
+              let bodycg = document.querySelectorAll(".bodycg col");
+              bodycg[index].style.width = th.width;
+            }
+          };
+        });
+      }
     },
-    //表格数据
+    //固定列表格数据
     init() {
       let fheader = [],
         frheader = [],
         fbody = [],
         frbody = [],
+        // 左边固定列和右边固定列的key值
         headerkey = [],
         rightkey = [];
+      //判断是否有左边固定
+      // flag = false;
       Array.from(this.header).forEach((item) => {
         if (item.fixed != null || item.fixed != undefined) {
-          if (item.fixed == true || item.fixed == "left") {
+          if (
+            item.fixed == true ||
+            item.fixed == "left" ||
+            item.fixed == "true"
+          ) {
             headerkey.push(item.key);
             fheader.push(item);
+            document.getElementsByClassName("tab-fixed-left")[0].style.display =
+              "none";
+            // flag = true;
           } else if (item.fixed == "right") {
             rightkey.push(item.key);
             frheader.push(item);
           }
         }
       });
+      // 当有固定列的时候，当显示多选框的时候，中间input的隐藏
+      // if (flag) {
+      //   if (this.ShowCheckbox) {
+      //     let trs = document.querySelectorAll(".tab-scroll tr");
+      //     trs.forEach((el) => {
+      //       el.cells[0].firstChild.style.display = "none";
+      //     });
+      //   }
+      // }
       setTimeout(() => {
         Array.from(this.body).forEach((item) => {
           let data1 = [],
@@ -469,56 +542,81 @@ export default {
     },
     //多表头
     initGroup() {
-      if (this.isgroup.length != 0) {
+      if (this.isgroup.length != 0 && this.isgroup[0]) {
         this.showgroup = true;
+      } else {
+        this.showgroup = false;
       }
-      Array.from(this.header).forEach((el, index) => {
-        if (el.groupname != undefined || el.groupname != null) {
-          this.secondary.push(el);
-          if (
-            this.header[index].groupname == this.header[index - 1].groupname
-          ) {
-            return;
-          }
-        }
-        this.primary.push(el);
-      });
-      let count = 0;
-      Array.from(this.isgroup).forEach((al) => {
-        Array.from(this.header).forEach((el) => {
-          if (al.groupname == el.groupname) {
-            count++;
-          }
-        });
-        al.spannum = count;
-        count = 0;
-      });
-      console.log("isgroup", this.isgroup);
-      this.$nextTick(() => {
-        Array.from(this.primary).forEach((el, index) => {
+      if (this.showgroup) {
+        Array.from(this.header).forEach((el, index) => {
           if (el.groupname != undefined || el.groupname != null) {
-            Array.from(this.isgroup).forEach((al) => {
-              if (el.groupname == al.groupname) {
-                el.spannum = al.spannum;
-              }
-            });
-            this.$refs.primarytr.cells[index].style.colspan = el.spannum;
-            this.$refs.primarytr.cells[index].style.height = (this.HeaderHeight)/2+'px';
-            console.log( this.$refs.primarytr.cells[index].colspan, this.$refs.primarytr.cells[index].colspan);
-          } else {
-            this.$refs.primarytr.cells[index].rowspan = 2;
-            console.log( this.$refs.primarytr.cells[index], this.$refs.primarytr.cells[index].rowspan);
+            this.secondary.push(el);
+            if (
+              this.header[index].groupname == this.header[index - 1].groupname
+            ) {
+              return;
+            }
           }
+          this.primary.push(el);
         });
-      });
-
-      console.log("一级表头", this.primary);
-      console.log("二级表头", this.secondary);
+        let count = 0;
+        Array.from(this.isgroup).forEach((al) => {
+          Array.from(this.header).forEach((el) => {
+            if (al.groupname == el.groupname) {
+              count++;
+            }
+          });
+          al.spannum = count;
+          count = 0;
+        });
+        this.$nextTick(() => {
+          Array.from(this.primary).forEach((el, index) => {
+            let num = 0;
+            if (el.groupname != undefined || el.groupname != null) {
+              Array.from(this.isgroup).forEach((al) => {
+                if (el.groupname == al.groupname) {
+                  num = al.spannum;
+                }
+              });
+              this.$refs.primarytr.cells[index].colSpan = num;
+              this.$refs.primarytr.cells[index].style.height =
+                this.HeaderHeight / 2 + "px";
+            } else {
+              this.$refs.primarytr.cells[index].rowSpan = 2;
+              this.$refs.primarytr.cells[index].style.height =
+                this.HeaderHeight + "px";
+            }
+          });
+        });
+      }
     },
+    checkedAllItem(CheckedALL) {
+      let all = document.querySelectorAll("input");
+      if (CheckedALL) {
+        all.forEach((el) => {
+          el.checked = true;
+        });
+      } else {
+        all.forEach((el) => {
+          el.checked = false;
+        });
+      }
+    },
+    //全选
+    checkedAll() {
+      this.CheckedALL = !this.CheckedALL;
+      this.checkedAllItem(this.CheckedALL);
+    },
+    //单选
+    checkedItem(e){
+      console.log(e)
+    },
+    //筛选
     cilckfilter(e) {
       console.log(e);
       this.filters = !this.filters;
     },
+    //排序
     clicksort(sort) {
       console.log(sort);
     },
@@ -549,7 +647,22 @@ export default {
         "scroll",
         function (e) {
           // 监听表格容器的滚动事件
-          let currentScrollTop = e.target.scrollLeft;
+          let currentScrollTop = e.target.scrollLeft,
+            maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
+          if (currentScrollTop == 0) {
+            document.getElementsByClassName("tab-fixed-left")[0].style.display =
+              "none";
+          } else if (currentScrollTop == maxScrollTop) {
+            document.getElementsByClassName(
+              "tab-fixed-right"
+            )[0].style.display = "none";
+          } else {
+            document.getElementsByClassName("tab-fixed-left")[0].style.display =
+              "block";
+            document.getElementsByClassName(
+              "tab-fixed-right"
+            )[0].style.display = "block";
+          }
           let leftbody = table.getElementsByClassName("tab-fixed-left");
           let rightbody = table.getElementsByClassName("tab-fixed-right");
           leftbody[0].style.left = currentScrollTop + "px";
@@ -562,6 +675,7 @@ export default {
   watch: {
     data() {
       this.init();
+      this.initTableWidth();
     },
   },
 };
@@ -624,6 +738,7 @@ li {
 .rightheader th:nth-child(n + 2) {
   border-left: 1px solid #e6e6e6;
 }
+
 .caret-wrapper {
   display: inline-flex;
   flex-direction: column;
