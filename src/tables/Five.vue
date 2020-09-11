@@ -8,11 +8,14 @@
     <h3>无背景色</h3>
     <MyButton type="primary" plain>新增</MyButton>
     <h1>图标</h1>
+    <h1>选择器</h1>
+    <MySelect v-model="input" placeholder="请输入内容"></MySelect>
   </div>
 </template>
 
 <script>
 import MyButton from "../components/my-button";
+import MySelect from "../components/my-select";
 export default {
   name: "Five",
 
@@ -20,10 +23,13 @@ export default {
 
   components: {
     MyButton,
+    MySelect,
   },
 
   data() {
-    return {};
+    return {
+      input:''
+    };
   },
 
   computed: {},

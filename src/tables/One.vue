@@ -74,11 +74,11 @@ export default {
       resize: false,
       // header属性 fixed：true和left
       header: [
-        { value: "状态", width: 75, key: "value1",fixed:true},
-        { value: "入库通知单", width: 165, key: "value2" ,fixed:true},
+        { value: "状态", width: 75, key: "value1" ,showfilter:true},
+        { value: "入库通知单", width: 165, key: "value2" },
         { value: "合同编号", width: 112, key: "value3" },
         { value: "采购订单", width: 157, key: "value4" },
-        { value: "承运商", width: 85, key: "value5", groupname: "人员" },
+        { value: "承运商", width: 85, key: "value5", groupname: "人员"},
         {
           value: "客户",
           width: 172,
@@ -110,7 +110,7 @@ export default {
           value13: "刘航",
         },
         {
-          value1: "已确认",
+          value1: "已完成",
           value2: "GP201903230000017",
           value3: "BJYDHT004",
           value4: "BBJJ20200430-002",
@@ -125,7 +125,7 @@ export default {
           value13: "刘航",
         },
         {
-          value1: "已确认",
+          value1: "已结束",
           value2: "GP201903230000017",
           value3: "BJYDHT004",
           value4: "BBJJ20200430-002",
@@ -140,7 +140,7 @@ export default {
           value13: "刘航",
         },
         {
-          value1: "已确认",
+          value1: "已完成",
           value2: "GP201903230000017",
           value3: "BJYDHT004",
           value4: "BBJJ20200430-002",
@@ -155,7 +155,7 @@ export default {
           value13: "刘航",
         },
         {
-          value1: "已确认",
+          value1: "已结束",
           value2: "GP201903230000017",
           value3: "BJYDHT004",
           value4: "BBJJ20200430-002",

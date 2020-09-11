@@ -134,17 +134,9 @@
                       </span>
                       <div v-if="filters" class="filters">
                         <ul>
-                          <li>
+                          <li v-for="(item,Index) in body" :key="Index">
                             <input type="checkbox" name id />
-                            <span>已确认</span>
-                          </li>
-                          <li>
-                            <input type="checkbox" name id />
-                            <span>已确认</span>
-                          </li>
-                          <li>
-                            <input type="checkbox" name id />
-                            <span>已确认</span>
+                            <span>{{item[cell.key] |filterkey}}</span>
                           </li>
                           <li>
                             <span>重置</span>
@@ -381,6 +373,14 @@ export default {
     width: [String, Number],
     height: [String, Number],
   },
+  filters: {
+    filterkey(item) {
+      let newitem = item
+      if(item != newitem){
+        return item
+      }
+    },
+  },
   methods: {
     // 表格初始化宽度
     initTableWidth() {
@@ -408,6 +408,8 @@ export default {
           document.getElementsByClassName("tab-fixed-right")[0].style.display =
             "block";
         }
+        document.getElementsByClassName("tab-fixed-left")[0].style.display =
+          "none";
       }
       this.header.forEach((el) => {
         allwidth += el.width;
@@ -608,8 +610,8 @@ export default {
       this.checkedAllItem(this.CheckedALL);
     },
     //单选
-    checkedItem(e){
-      console.log(e)
+    checkedItem(e) {
+      console.log(e);
     },
     //筛选
     cilckfilter(e) {
@@ -619,6 +621,41 @@ export default {
     //排序
     clicksort(sort) {
       console.log(sort);
+    },
+    //滚动监听
+    scroll(e) {
+      // 监听表格容器的滚动事件
+      let currentScrollTop = e.target.scrollLeft,
+        maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
+      if (currentScrollTop == 0) {
+        document.getElementsByClassName("tab-fixed-left")[0].style.display =
+          "none";
+      } else if (currentScrollTop == maxScrollTop) {
+        document.getElementsByClassName("tab-fixed-right")[0].style.display =
+          "none";
+      } else {
+        document.getElementsByClassName("tab-fixed-left")[0].style.display =
+          "block";
+        document.getElementsByClassName("tab-fixed-right")[0].style.display =
+          "block";
+      }
+      if (this.ShowCheckbox) {
+        let num = 0;
+        this.header.forEach((el) => {
+          if (el.fixed == true || el.fixed == "left") {
+            num++;
+          }
+        });
+        //判断是否显示左右固定列
+        if (num == 0) {
+          document.getElementsByClassName("tab-fixed-left")[0].style.display =
+            "none";
+        }
+      }
+      let leftbody = document.getElementsByClassName("tab-fixed-left");
+      let rightbody = document.getElementsByClassName("tab-fixed-right");
+      leftbody[0].style.left = currentScrollTop + "px";
+      rightbody[0].style.right = -currentScrollTop + "px";
     },
   },
   created() {},
@@ -643,33 +680,7 @@ export default {
     this.$nextTick(() => {
       this.init();
       let table = document.querySelector(".table");
-      table.addEventListener(
-        "scroll",
-        function (e) {
-          // 监听表格容器的滚动事件
-          let currentScrollTop = e.target.scrollLeft,
-            maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
-          if (currentScrollTop == 0) {
-            document.getElementsByClassName("tab-fixed-left")[0].style.display =
-              "none";
-          } else if (currentScrollTop == maxScrollTop) {
-            document.getElementsByClassName(
-              "tab-fixed-right"
-            )[0].style.display = "none";
-          } else {
-            document.getElementsByClassName("tab-fixed-left")[0].style.display =
-              "block";
-            document.getElementsByClassName(
-              "tab-fixed-right"
-            )[0].style.display = "block";
-          }
-          let leftbody = table.getElementsByClassName("tab-fixed-left");
-          let rightbody = table.getElementsByClassName("tab-fixed-right");
-          leftbody[0].style.left = currentScrollTop + "px";
-          rightbody[0].style.right = -currentScrollTop + "px";
-        },
-        false
-      );
+      table.addEventListener("scroll", this.scroll, false);
     });
   },
   watch: {
