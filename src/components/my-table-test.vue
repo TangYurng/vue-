@@ -1,6 +1,53 @@
 <template>
   <div class="table" ref="mytable">
     <div class="content">
+      <div class="tab-scroll">
+        <div class="header">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :style="{width: setwidth}"
+            ref="tabheader"
+          >
+            <colgroup class="headercg">
+              <col v-if="ShowCheckbox" style="width: 36px;" />
+              <col
+                v-for="(cell, colIndex) in header"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <thead>
+              <slot name="header"></slot>
+            </thead>
+          </table>
+        </div>
+
+        <div class="body">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            :class="{'isstripe':stripe}"
+            :style="{width: setwidth}"
+            ref="tabbody"
+          >
+            <colgroup class="bodycg">
+              <col v-if="ShowCheckbox" style="width: 36px;" />
+              <col
+                v-for="(cell, colIndex) in header"
+                :key="colIndex"
+                :style="{width: cell.width+'px'}"
+              />
+            </colgroup>
+            <tbody>
+              <slot name="body"></slot>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="tab-fixed-left">
         <div class="leftheader">
           <table
@@ -84,179 +131,6 @@
                 <td v-for="(cell,colIndex) in row" :key="colIndex">
                   <div>
                     <span>{{cell}}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="tab-scroll">
-        <div class="header">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :style="{width: setwidth}"
-            ref="tabheader"
-          >
-            <colgroup class="headercg">
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in header"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <thead>
-              <!-- 正常表头 -->
-              <tr :style="{height: HeaderHeight + 'px'}" v-if="!showgroup" ref="headertr">
-                <th v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-                </th>
-                <th v-for="(cell, colIndex) in header" :key="colIndex" :name="cell.key">
-                  <div class="headerdiv">
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-              <!-- 一级表头 -->
-              <tr v-if="showgroup" ref="primarytr">
-                <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
-                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-                </th>
-                <th v-for="(cell, colIndex) in primary" :key="colIndex">
-                  <div class="headerdiv">
-                    <span v-if="cell.groupname">{{cell.groupname}}</span>
-                    <span v-else>{{cell.value}}</span>
-                     <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-              <!-- 二级表头 -->
-              <tr v-if="showgroup">
-                <th v-for="(cell,colIndex) in secondary" :key="colIndex">
-                  <div>
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="body">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :class="{'isstripe':stripe}"
-            :style="{width: setwidth}"
-            ref="tabbody"
-          >
-            <colgroup class="bodycg">
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in header"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <tbody>
-              <tr
-                v-for="(row, rowIndex) in body"
-                :key="rowIndex"
-                :style="{height: BodyHeight + 'px'}"
-                ref="bodytr"
-              >
-                <td v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" :checked="CheckedItem" @click="checkedItem" />
-                </td>
-                <td v-for="(cell,colIndex) in header" :key="colIndex">
-                  <div>
-                    <span>{{row[cell.key]}}</span>
                   </div>
                 </td>
               </tr>
@@ -360,6 +234,8 @@
   </div>
 </template>
 
+
+    
 <script>
 export default {
   name: "MyTable",
@@ -465,6 +341,7 @@ export default {
       this.header.forEach((el) => {
         allwidth += el.width;
       });
+      console.log();
       this.fixedheader.forEach((el) => {
         leftallwidth += el.width;
       });
@@ -472,7 +349,7 @@ export default {
         rightallwidth += el.width;
       });
       if (allwidth > this.$refs.mytable.offsetWidth) {
-        this.setwidth = allwidth + "px";
+        this.setwidth = allwidth  + "px";
         this.leftsetwidth = leftallwidth + "px";
         this.rightsetwidth = rightallwidth + "px";
       } else {
@@ -721,8 +598,6 @@ export default {
       // 监听表格容器的滚动事件
       let currentScrollTop = e.target.scrollLeft,
         maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
-        console.log("maxScrollTop",maxScrollTop)
-        console.log("currentScrollTop",currentScrollTop)
       if (currentScrollTop == 0) {
         document.getElementsByClassName("tab-fixed-left")[0].style.display =
           "none";
@@ -793,6 +668,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 * {

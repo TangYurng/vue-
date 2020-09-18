@@ -1,161 +1,66 @@
 <template>
-  <div :class="[
-    inputSize ? 'el-input--' + inputSize : ''
-    ]">
-    <template>
-      <!-- 前置元素 -->
-      <div class="el-input-group__prepend" v-if="$slots.prepend">
-        <slot name="prepend"></slot>
-      </div>
-      <input
-        :tabindex="tabindex"
-        class="el-input__inner"
-        v-bind="$attrs"
-        :type="showPassword ? (passwordVisible ? 'text': 'password') : type"
-        :autocomplete="autoComplete || autocomplete"
-        ref="input"
-        :aria-label="label"
-      />
-      <!-- 前置内容 -->
-      <span class="el-input__prefix" v-if="$slots.prefix || prefixIcon">
-        <slot name="prefix"></slot>
-        <i class="el-input__icon" v-if="prefixIcon" :class="prefixIcon"></i>
-      </span>
-      <!-- 后置内容 -->
-      <span class="el-input__suffix" v-if="getSuffixVisible()">
-        <span class="el-input__suffix-inner">
-          <template v-if="!showClear || !showPwdVisible || !isWordLimitVisible">
-            <slot name="suffix"></slot>
-            <i class="el-input__icon" v-if="suffixIcon" :class="suffixIcon"></i>
-          </template>
-          <i
-            v-if="showPwdVisible"
-            class="el-input__icon el-icon-view el-input__clear"
-            @click="handlePasswordVisible"
-          ></i>
-          <span v-if="isWordLimitVisible" class="el-input__count">
-            <span class="el-input__count-inner">{{ textLength }}/{{ upperLimit }}</span>
-          </span>
-        </span>
-        <i
-          class="el-input__icon"
-          v-if="validateState"
-          :class="['el-input__validateIcon', validateIcon]"
-        ></i>
-      </span>
-      <!-- 后置元素 -->
-      <div class="el-input-group__append" v-if="$slots.append">
-        <slot name="append"></slot>
-      </div>
-    </template>
+  <div class="my-select">
+    <div class="my-select-selection">
+      <!-- 图标 -->
+      <i :class="icon" v-if="icon"></i>
+      <!-- 内容 -->
+      <span class="select-placeholder"></span>
+      <span class="select-selected-value">启用</span>
+      <!-- 箭头 -->
+      <i class="el-select-arrow"></i>
+    </div>
   </div>
 </template>
 <script>
 export default {
-  name: "Mybutton",
+  name: "MySelect",
   data() {
     return {
-      textareaCalcStyle: {},
-      hovering: false,
-      focused: false,
-      isComposing: false,
-      passwordVisible: false,
+      icon: true,
     };
   },
-  props: {
-    value: [String, Number],
-    size: String,
-    resize: String,
-    form: String,
-    disabled: Boolean,
-    readonly: Boolean,
-    type: {
-      type: String,
-      default: "text",
-    },
-    autosize: {
-      type: [Boolean, Object],
-      default: false,
-    },
-    autocomplete: {
-      type: String,
-      default: "off",
-    },
-    validateEvent: {
-      type: Boolean,
-      default: true,
-    },
-    suffixIcon: String,
-    prefixIcon: String,
-    label: String,
-    clearable: {
-      type: Boolean,
-      default: false,
-    },
-    showPassword: {
-      type: Boolean,
-      default: false,
-    },
-    showWordLimit: {
-      type: Boolean,
-      default: false,
-    },
-    tabindex: String,
-  },
-  methods: {
-    handleClick(evt) {
-      this.$emit("click", evt);
-    },
+  props: {},
+  methods: {},
+  mounted(){
+    document.querySelector(".select-placeholder").style.display="none"
   },
 };
 </script>
 <style scoped>
-.my-button {
+.my-select {
   display: inline-block;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  background: #fff;
-  border: 2px solid #dcdfe6;
-  color: #606266;
-  -webkit-appearance: none;
-  text-align: center;
+  width: 100%;
   box-sizing: border-box;
-  outline: none;
-  margin: 0;
-  transition: 0.1s;
-  font-weight: 500;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  padding: 12px 20px;
+  vertical-align: middle;
+  color: #657180;
   font-size: 14px;
-  border-radius: 3px;
+  line-height: normal;
+  width: 130px;
+  margin: auto;
 }
-.my-button + .my-button {
-  margin-left: 10px;
+.my-select-selection {
+  display: block;
+  box-sizing: border-box;
+  outline: 0;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+  background-color: #fff;
+  border-radius: 20px;
+  border: 1px solid #d7dde4;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
-/* 有背景色 */
-.my-button--primary {
-  color: #fff;
-  background-color: #68cfeb;
-  border-color: #68cfeb;
-}
-.my-button--danger {
-  color: #fff;
-  background-color: #e6614f;
-  border-color: #e6614f;
-}
-.my-button--warning {
-  color: #fff;
-  background-color: #f1c434;
-  border-color: #f1c434;
-}
-/* 无背景色 */
-.my-button--primary.is-plain {
-  color: #006c89;
-  background: #ffffff;
-  border-color: #6fa4ff;
-  border-radius: 2px;
+.select-placeholder,
+.select-selected-value {
+  display: block;
+  height: 38px;
+  line-height: 38px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 </style>

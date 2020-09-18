@@ -46,6 +46,7 @@
         :ShowCheckbox="ShowCheckbox"
         :stripe="stripe"
         :resize="resize"
+        :isgroup="isgroup"
       >
     <!-- <template slot-scope="scope">
         <span style="margin-left: 10px">{{ }}</span>
@@ -70,13 +71,13 @@ export default {
     return {
       RecordNum: 263,
       ShowCheckbox: true,
-      stripe: false,
-      resize: false,
-      // header属性 fixed：true和left
+      stripe: true,
+      resize: true,
+      // header属性 fixed:true和right;showfilter:true;showsort:true
       header: [
-        { value: "状态", width: 75, key: "value1" ,showfilter:true},
-        { value: "入库通知单", width: 165, key: "value2" },
-        { value: "合同编号", width: 112, key: "value3" },
+        { value: "状态", width: 75, key: "value1" ,showfilter:true, fixed:true},
+        { value: "入库通知单", width: 165, key: "value2" , fixed:true},
+        { value: "合同编号", width: 112, key: "value3" ,showsort:true},
         { value: "采购订单", width: 157, key: "value4" },
         { value: "承运商", width: 85, key: "value5", groupname: "人员"},
         {
@@ -91,13 +92,13 @@ export default {
         { value: "押运员	", width: 110, key: "value10", groupname: "押运员" },
         { value: "押运员1	", width: 110, key: "value11", groupname: "押运员" },
         { value: "押运员2	", width: 110, key: "value12", groupname: "押运员" },
-        { value: "押运员3	", width: 110, key: "value13", groupname: "押运员" ,fixed:"right"},
+        { value: "押运员3	", width: 110, key: "value13", groupname: "押运员", fixed:'right'},
       ],
       body: [
         {
           value1: "已确认",
           value2: "GP201903230000016",
-          value3: "BJYDHT003",
+          value3: "003",
           value4: "BBJJ20200430-001",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",
@@ -112,7 +113,7 @@ export default {
         {
           value1: "已完成",
           value2: "GP201903230000017",
-          value3: "BJYDHT004",
+          value3: "004",
           value4: "BBJJ20200430-002",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",
@@ -127,7 +128,7 @@ export default {
         {
           value1: "已结束",
           value2: "GP201903230000017",
-          value3: "BJYDHT004",
+          value3: "008",
           value4: "BBJJ20200430-002",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",
@@ -142,7 +143,7 @@ export default {
         {
           value1: "已完成",
           value2: "GP201903230000017",
-          value3: "BJYDHT004",
+          value3: "006",
           value4: "BBJJ20200430-002",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",
@@ -157,7 +158,7 @@ export default {
         {
           value1: "已结束",
           value2: "GP201903230000017",
-          value3: "BJYDHT004",
+          value3: "001",
           value4: "BBJJ20200430-002",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",
@@ -172,7 +173,7 @@ export default {
         {
           value1: "已确认",
           value2: "GP201903230000017",
-          value3: "BJYDHT004",
+          value3: "000",
           value4: "BBJJ20200430-002",
           value5: "上海博科",
           value6: "浙江宁波新能源有限公司",

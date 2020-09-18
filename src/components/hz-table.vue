@@ -36,11 +36,7 @@
       </table>
     </div>
     <!--表格主体固定列-->
-    <div
-      class="table_body_left"
-      :style="{top:tableHeadHeight +2+'px',width:widthHL,
-    height:'calc(100% - ' + (tableHeadHeight+3) + 'px)'}"
-    >
+    <div class="table_body_left" :style="{top:tableHeadHeight +2+'px',width:widthHL,height:'calc(100% - ' + (tableHeadHeight+3) + 'px)'}">
       <table class="table_scroll_box">
         <tbody>
           <tr v-for="(item,index) in bodyFixedList" :key="index">

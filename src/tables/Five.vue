@@ -9,13 +9,21 @@
     <MyButton type="primary" plain>新增</MyButton>
     <h1>图标</h1>
     <h1>选择器</h1>
-    <MySelect v-model="input" placeholder="请输入内容"></MySelect>
+    <MySelect></MySelect>
+    <h1>状态标志</h1>
+    <div style="width:100px;height:50px;border:1px solid #000;position:relative;margin:auto;">
+      <MyStatus :status="status"></MyStatus>
+    </div>
+    <h1>进度条</h1>
+    <MyProgress :show="show"></MyProgress>
   </div>
 </template>
 
 <script>
 import MyButton from "../components/my-button";
 import MySelect from "../components/my-select";
+import MyStatus from "../components/my-status";
+import MyProgress from "../components/my-progress";
 export default {
   name: "Five",
 
@@ -24,11 +32,14 @@ export default {
   components: {
     MyButton,
     MySelect,
+    MyStatus,
+    MyProgress
   },
 
   data() {
     return {
-      input:''
+      status:"已提交",
+      show:'已送达'
     };
   },
 
