@@ -721,8 +721,6 @@ export default {
       // 监听表格容器的滚动事件
       let currentScrollTop = e.target.scrollLeft,
         maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
-        console.log("maxScrollTop",maxScrollTop)
-        console.log("currentScrollTop",currentScrollTop)
       if (currentScrollTop == 0) {
         document.getElementsByClassName("tab-fixed-left")[0].style.display =
           "none";

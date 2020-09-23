@@ -3,13 +3,7 @@
     <div class="content">
       <div class="tab-scroll">
         <div class="header">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :style="{width: setwidth}"
-            ref="tabheader"
-          >
+          <table cellspacing="0" cellpadding="0" border="0" :style="{width: setwidth}" ref="tabheader">
             <colgroup class="headercg">
               <col v-if="ShowCheckbox" style="width: 36px;" />
               <col
@@ -17,9 +11,89 @@
                 :key="colIndex"
                 :style="{width: cell.width+'px'}"
               />
+              <col v-if="ShowOperation" class="ShowOperation" />
             </colgroup>
             <thead>
-              <slot name="header"></slot>
+              <slot name="header" v-if="!showgroup"></slot>
+              <!-- 多表头 -->
+                <tr v-if="showgroup" ref="primarytr">
+                <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
+                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
+                </th>
+                <th v-for="(cell, colIndex) in primary" :key="colIndex">
+                  <div class="headerdiv">
+                    <span v-if="cell.groupname">{{cell.groupname}}</span>
+                    <span v-else>{{cell.value}}</span>
+                     <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
+                      <span class="caret-wrapper" @click="cilckfilter($event)">
+                        <i class="filter-caret filtertop"></i>
+                        <i class="filterbottom"></i>
+                      </span>
+                      <div v-if="filters" class="filters">
+                        <ul>
+                          <!-- <li v-for="(item,Index) in body" :key="Index">
+                            <input type="checkbox" name id />
+                            <span>{{item[cell.key] |filterkey}}</span>
+                          </li>-->
+                          <li v-for="(item,Index) in filteritems" :key="Index">
+                            <input type="checkbox" name id />
+                            <span>{{item}}</span>
+                          </li>
+                          <li>
+                            <span @click="resetfilter($event)">重置</span>
+                            <span @click="surefilter($event)">确认</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
+                      <span class="caret-wrapper">
+                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
+                        <i class="sort-caret descending" @click="clicksort($event)"></i>
+                      </span>
+                    </div>
+                  </div>
+                </th>
+                <th v-if="ShowOperation" class="ShowOperation" rowspan="2">
+                  <span>操作</span>
+                </th>
+              </tr>
+              <!-- 二级表头 -->
+              <tr v-if="showgroup">
+                <th v-for="(cell,colIndex) in secondary" :key="colIndex">
+                  <div>
+                    <span>{{cell.value}}</span>
+                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
+                      <span class="caret-wrapper" @click="cilckfilter($event)">
+                        <i class="filter-caret filtertop"></i>
+                        <i class="filterbottom"></i>
+                      </span>
+                      <div v-if="filters" class="filters">
+                        <ul>
+                          <!-- <li v-for="(item,Index) in body" :key="Index">
+                            <input type="checkbox" name id />
+                            <span>{{item[cell.key] |filterkey}}</span>
+                          </li>-->
+                          <li v-for="(item,Index) in filteritems" :key="Index">
+                            <input type="checkbox" name id />
+                            <span>{{item}}</span>
+                          </li>
+                          <li>
+                            <span @click="resetfilter($event)">重置</span>
+                            <span @click="surefilter($event)">确认</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
+                      <span class="caret-wrapper">
+                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
+                        <i class="sort-caret descending" @click="clicksort($event)"></i>
+                      </span>
+                    </div>
+                  </div>
+                </th>
+              </tr>
             </thead>
           </table>
         </div>
@@ -40,6 +114,7 @@
                 :key="colIndex"
                 :style="{width: cell.width+'px'}"
               />
+              <col v-if="ShowOperation" class="ShowOperation" />
             </colgroup>
             <tbody>
               <slot name="body"></slot>
@@ -108,7 +183,6 @@
             border="0"
             :class="{'isstripe':stripe}"
             :style="{width: leftsetwidth}"
-            ref="tabbody"
           >
             <colgroup>
               <col v-if="ShowCheckbox" style="width: 36px;" />
@@ -204,7 +278,6 @@
             border="0"
             :class="{'isstripe':stripe}"
             :style="{width: rightsetwidth}"
-            ref="tabbody"
           >
             <colgroup>
               <col
@@ -288,6 +361,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    ShowOperation: {
+      type: Boolean,
+      default: false,
+    },
     // 斑马纹,长宽
     stripe: {
       type: Boolean,
@@ -338,6 +415,9 @@ export default {
         document.getElementsByClassName("tab-fixed-left")[0].style.display =
           "none";
       }
+      if (this.ShowOperation) {
+        allwidth += 100;
+      }
       this.header.forEach((el) => {
         allwidth += el.width;
       });
@@ -349,7 +429,7 @@ export default {
         rightallwidth += el.width;
       });
       if (allwidth > this.$refs.mytable.offsetWidth) {
-        this.setwidth = allwidth  + "px";
+        this.setwidth = allwidth + "px";
         this.leftsetwidth = leftallwidth + "px";
         this.rightsetwidth = rightallwidth + "px";
       } else {
@@ -635,7 +715,8 @@ export default {
     this.initGroup();
     // 斑马纹
     if (this.stripe) {
-      this.$refs.bodytr.forEach((item, index) => {
+      let trs = this.$refs.tabbody.lastChild.children;
+      trs.forEach((item, index) => {
         if (index % 2) {
           item.style.background = "#F6F7FB";
         }

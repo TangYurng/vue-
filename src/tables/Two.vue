@@ -4,25 +4,28 @@
       :header="header"
       :body="body"
       :ShowCheckbox="ShowCheckbox"
+      :ShowOperation="ShowOperation"
       :stripe="stripe"
       :resize="resize"
       :isgroup="isgroup"
     >
-      <template v-slot:header>
+      <template slot="header">
         <my-table-tr :style="{height: 44 + 'px'}">
+          <my-table-td type="selection"></my-table-td>
           <my-table-td v-for="(item,index) in header" :key="index">{{item.value}}</my-table-td>
-          <my-table-td style="width:50px">操作</my-table-td>
+          <my-table-td width="100px" fixed="right" value="操作">
+            <template slot-scope="scope">
+              <div>
+                <span @click="handleEdit(scope.$index,scope.row)">修改</span>
+                <span>新增</span>
+              </div>
+            </template>
+          </my-table-td>
         </my-table-tr>
       </template>
-      <template v-slot:body>
+      <template slot="body">
         <my-table-tr v-for="(row, rowIndex) in body" :key="rowIndex" :style="{height: 42 + 'px'}">
           <my-table-td v-for="(cell,colIndex) in header" :key="colIndex">{{row[cell.key]}}</my-table-td>
-          <my-table-td>
-            <div>
-              <span>1</span>
-              <!-- <span>新增</span> -->
-            </div>
-          </my-table-td>
         </my-table-tr>
       </template>
     </my-table-test>
@@ -43,8 +46,9 @@ export default {
   },
   data() {
     return {
-      ShowCheckbox: false,
-      stripe: false,
+      ShowCheckbox: true,
+      ShowOperation: true,
+      stripe: true,
       resize: false,
       isgroup: [
         // { groupname: "押运员", groupkey: "yayun" },
@@ -56,8 +60,9 @@ export default {
           width: 75,
           key: "value1",
           showfilter: true,
+          fixed: true,
         },
-        { value: "入库通知单", width: 165, key: "value2" },
+        { value: "入库通知单", width: 165, key: "value2", fixed: true },
         { value: "合同编号", width: 112, key: "value3", showsort: true },
         { value: "采购订单", width: 157, key: "value4" },
         { value: "承运商", width: 85, key: "value5", groupname: "人员" },
@@ -78,6 +83,7 @@ export default {
           width: 110,
           key: "value13",
           groupname: "押运员",
+          fixed: "right",
         },
       ],
       body: [
@@ -177,6 +183,11 @@ export default {
   mounted() {
     // console.log(document.querySelectorAll("tr")[0].querySelectorAll("td"));
   },
+  methods:{
+     handleEdit(index, row) {
+        console.log(index, row);
+      },
+  }
 };
 </script>
 

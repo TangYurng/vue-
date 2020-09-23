@@ -1,0 +1,121 @@
+{
+  "id": "2071535",
+  "name": "基础图标",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "基础线性图标和扁平图标",
+  "glyphs": [
+    {
+      "icon_id": "17205566",
+      "name": "单据_A",
+      "font_class": "danju_A",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "17205563",
+      "name": "单据_B",
+      "font_class": "danju_B",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "17205561",
+      "name": "分享_A",
+      "font_class": "fenxiang_A",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "17205550",
+      "name": "分享_B",
+      "font_class": "fenxiang_B",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "17205547",
+      "name": "删除_A",
+      "font_class": "shanchu_A",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "17205546",
+      "name": "删除_B",
+      "font_class": "shanchu_B",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "17205537",
+      "name": "复制_A",
+      "font_class": "fuzhi_A",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "17205533",
+      "name": "复制_B",
+      "font_class": "fuzhi_B",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
+      "icon_id": "17205522",
+      "name": "修改_A",
+      "font_class": "xiugai_A",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "17205523",
+      "name": "修改_B",
+      "font_class": "xiugai_B",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "17205513",
+      "name": "新增_A",
+      "font_class": "xinzeng_A",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "17205514",
+      "name": "新增_B",
+      "font_class": "xinzeng_B",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "17205501",
+      "name": "停用_A",
+      "font_class": "tingyong_A",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "17205502",
+      "name": "停用_B",
+      "font_class": "tingyong_B",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "17205379",
+      "name": "启用_A",
+      "font_class": "qiyong_A",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "17205380",
+      "name": "启用_B",
+      "font_class": "qiyong_B",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    }
+  ]
+}

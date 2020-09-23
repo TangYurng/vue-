@@ -8,6 +8,8 @@
     <h3>无背景色</h3>
     <MyButton type="primary" plain>新增</MyButton>
     <h1>图标</h1>
+    <span class="iconfont icondanju_A"></span>
+    <span class="iconfont icondanju_B"></span>
     <h1>选择器</h1>
     <MySelect></MySelect>
     <h1>状态标志</h1>

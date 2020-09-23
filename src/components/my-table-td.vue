@@ -1,5 +1,5 @@
 <template>
-  <td class="my-tatble-td"  >
+  <td class="my-tatble-td" :fixed="fixed" :value="value">
     <slot></slot>
   </td>
 </template>
@@ -8,14 +8,20 @@
 export default {
   name: "my-table-td",
   data() {
-    return {
-    };
+    return {};
   },
   props: {
-      defaultwidth:{
-          type:Number,
-          default:30
-      }
+    fixed: [String, Number],
+    value: [String],
+  },
+  mounted() {
+    if (this.fixed != null || this.fixed != undefined) {
+      console.log(this);
+    }
+    if (this.value != null || this.value != undefined) {
+      console.log(this);
+      this.$el.innerHTML= this.value
+    }
   },
 };
 </script>
