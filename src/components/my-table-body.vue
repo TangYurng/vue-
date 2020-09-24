@@ -3,30 +3,21 @@
     cellspacing="0"
     cellpadding="0"
     border="0"
-    :class="{'isstripe':stripe}"
-    :style="{width: setwidth}"
+    :class="{ isstripe: stripe }"
+    :style="{ width: setwidth }"
     ref="tabbody"
   >
     <colgroup class="bodycg">
-      <col v-if="ShowCheckbox" style="width: 36px;" />
-      <col v-for="(cell, colIndex) in header" :key="colIndex" :style="{width: cell.width+'px'}" />
+      <col v-if="ShowCheckbox" style="width: 36px" />
+      <col
+        v-for="(cell, colIndex) in header"
+        :key="colIndex"
+        :style="{ width: cell.width + 'px' }"
+      />
+      <col v-if="ShowOperation" class="ShowOperation" />
     </colgroup>
     <tbody>
-      <tr
-        v-for="(row, rowIndex) in body"
-        :key="rowIndex"
-        :style="{height: BodyHeight + 'px'}"
-        ref="bodytr"
-      >
-        <td v-if="ShowCheckbox" class="checkbox">
-          <input type="checkbox" :checked="CheckedItem" @click="checkedItem" />
-        </td>
-        <td v-for="(cell,colIndex) in header" :key="colIndex">
-          <div>
-            <span>{{row[cell.key]}}</span>
-          </div>
-        </td>
-      </tr>
+      <slot name="body"></slot>
     </tbody>
   </table>
 </template>
