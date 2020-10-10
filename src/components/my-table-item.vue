@@ -1,5 +1,5 @@
 <template>
-  <td class="my-tatble-td" :fixed="fixed" :value="value">
+  <td class="my-tatble-item" :fixed="fixed" :value="value">
     <slot></slot>
   </td>
 </template>

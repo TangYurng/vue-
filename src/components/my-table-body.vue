@@ -14,10 +14,23 @@
         :key="colIndex"
         :style="{ width: cell.width + 'px' }"
       />
-      <col v-if="ShowOperation" class="ShowOperation" />
     </colgroup>
     <tbody>
-      <slot name="body"></slot>
+      <tr
+        v-for="(row, rowIndex) in body"
+        :key="rowIndex"
+        :style="{ height: BodyHeight + 'px' }"
+        ref="bodytr"
+      >
+        <td v-if="ShowCheckbox" class="checkbox">
+          <input type="checkbox" :checked="CheckedItem" @click="checkedItem" />
+        </td>
+        <td v-for="(cell, colIndex) in header" :key="colIndex">
+          <div>
+            <span>{{ row[cell.key] }}</span>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -71,6 +84,10 @@ export default {
       default: 42,
     },
     ShowCheckbox: {
+      type: Boolean,
+      default: false,
+    },
+    ShowOperation: {
       type: Boolean,
       default: false,
     },

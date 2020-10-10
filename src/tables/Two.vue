@@ -1,5 +1,6 @@
 <template>
   <div class="wrap">
+    <!-- 绑定主体内容data， -->
     <my-table-test
       :header="header"
       :body="body"
@@ -9,46 +10,30 @@
       :resize="resize"
       :isgroup="isgroup"
     >
-      <template slot="header">
-        <my-table-tr :style="{height: 44 + 'px'}">
-          <my-table-td type="selection"></my-table-td>
-          <my-table-td v-for="(item,index) in header" :key="index">{{item.value}}</my-table-td>
-          <my-table-td width="100px" fixed="right" value="操作">
-            <template slot-scope="scope">
-              <div>
-                <span @click="handleEdit(scope.$index,scope.row)">修改</span>
-                <span>新增</span>
-              </div>
-            </template>
-          </my-table-td>
-        </my-table-tr>
-      </template>
-      <template slot="body">
-        <my-table-tr v-for="(row, rowIndex) in body" :key="rowIndex" :style="{height: 42 + 'px'}">
-          <my-table-td v-for="(cell,colIndex) in header" :key="colIndex">{{row[cell.key]}}</my-table-td>
-        </my-table-tr>
-      </template>
+          <my-table-item type="selection">选择</my-table-item>
+          <my-table-item v-for="(item, index) in header" :key="index">{{
+            item.value
+          }}</my-table-item>
+          <my-table-item width="100px" fixed="right" value="操作"> </my-table-item>
+
     </my-table-test>
   </div>
 </template>
 
 <script>
 import MyTableTest from "../components/my-table-test";
-import MyTableTr from "../components/my-table-tr";
-import MyTableTd from "../components/my-table-td";
+import MyTableItem from "../components/my-table-item";
 export default {
   name: "Two",
   components: {
     MyTableTest,
-    MyTableTr,
-    MyTableTd,
-    // MyTableBody
+    MyTableItem,
   },
   data() {
     return {
-      ShowCheckbox: true,
-      ShowOperation: true,
-      stripe: true,
+      ShowCheckbox: false,
+      ShowOperation: false,
+      stripe: false,
       resize: false,
       isgroup: [
         // { groupname: "押运员", groupkey: "yayun" },
@@ -57,33 +42,30 @@ export default {
       header: [
         {
           value: "状态",
-          width: 75,
+          width: "75px",
           key: "value1",
-          showfilter: true,
-          fixed: true,
         },
-        { value: "入库通知单", width: 165, key: "value2", fixed: true },
-        { value: "合同编号", width: 112, key: "value3", showsort: true },
-        { value: "采购订单", width: 157, key: "value4" },
-        { value: "承运商", width: 85, key: "value5", groupname: "人员" },
+        { value: "入库通知单", width: "165px", key: "value2" },
+        { value: "合同编号", width: "112px", key: "value3" },
+        { value: "采购订单", width: "157px", key: "value4" },
+        { value: "承运商", width: "85px", key: "value5", groupname: "人员" },
         {
           value: "客户",
-          width: 172,
+          width: "172px",
           key: "value6",
           groupname: "人员",
         },
-        { value: "计划装车日期", width: 330, key: "value7" },
-        { value: "二级客户", width: 85, key: "value8" },
-        { value: "驾驶员	", width: 90, key: "value9" },
-        { value: "押运员	", width: 110, key: "value10", groupname: "押运员" },
-        { value: "押运员1	", width: 110, key: "value11", groupname: "押运员" },
-        { value: "押运员2	", width: 110, key: "value12", groupname: "押运员" },
+        { value: "计划装车日期", width: "330px", key: "value7" },
+        { value: "二级客户", width: "85px", key: "value8" },
+        { value: "驾驶员	", width: "90px", key: "value9" },
+        { value: "押运员	", width: "110px", key: "value10", groupname: "押运员" },
+        { value: "押运员1	", width: "110px", key: "value11", groupname: "押运员" },
+        { value: "押运员2	", width: "110px", key: "value12", groupname: "押运员" },
         {
           value: "押运员3	",
-          width: 110,
+          width: "110px",
           key: "value13",
           groupname: "押运员",
-          fixed: "right",
         },
       ],
       body: [
@@ -183,11 +165,11 @@ export default {
   mounted() {
     // console.log(document.querySelectorAll("tr")[0].querySelectorAll("td"));
   },
-  methods:{
-     handleEdit(index, row) {
-        console.log(index, row);
-      },
-  }
+  methods: {
+    handleEdit(index, row) {
+      console.log(index, row);
+    },
+  },
 };
 </script>
 

@@ -1,124 +1,191 @@
 
 <template>
-  <table
-    cellspacing="0"
-    cellpadding="0"
-    border="0"
-    :style="{ width: setwidth }"
-  >
-    <colgroup class="headercg">
-      <col v-if="ShowCheckbox" style="width: 36px" />
-      <col
-        v-for="(cell, colIndex) in header"
-        :key="colIndex"
-        :style="{ width: cell.width + 'px' }"
-      />
-      <col v-if="ShowOperation" class="ShowOperation" />
-    </colgroup>
-    <thead>
-      <slot name="header" v-if="!showgroup"></slot>
-      <!-- 多表头 -->
-      <tr v-if="showgroup" ref="primarytr">
-        <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
-          <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-        </th>
-        <th v-for="(cell, colIndex) in primary" :key="colIndex">
-          <div class="headerdiv">
-            <span v-if="cell.groupname">{{ cell.groupname }}</span>
-            <span v-else>{{ cell.value }}</span>
-            <div
-              v-if="cell.showfilter"
-              ref="showfilter"
-              style="display: inline-block"
-            >
-              <span class="caret-wrapper" @click="cilckfilter($event)">
-                <i class="filter-caret filtertop"></i>
-                <i class="filterbottom"></i>
-              </span>
-              <div v-if="filters" class="filters">
-                <ul>
-                  <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                  <li v-for="(item, Index) in filteritems" :key="Index">
-                    <input type="checkbox" name id />
-                    <span>{{ item }}</span>
-                  </li>
-                  <li>
-                    <span @click="resetfilter($event)">重置</span>
-                    <span @click="surefilter($event)">确认</span>
-                  </li>
-                </ul>
+  <div class="my-table-header">
+    <table
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      :style="{ width: setwidth }"
+    >
+      <!-- <colgroup class="headercg">
+        <col
+          v-for="(cell, colIndex) in header"
+          :key="colIndex"
+          :style="{ width: cell.width + 'px' }"
+        />
+      </colgroup> -->
+      <thead>
+        <slot name="header"></slot>
+        <!-- <tr
+          :style="{ height: HeaderHeight + 'px' }"
+          v-if="!showgroup"
+          ref="headertr"
+        >
+          
+          <th v-if="ShowCheckbox" class="checkbox">
+            <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
+          </th>
+          <th
+            v-for="(cell, colIndex) in header"
+            :key="colIndex"
+            :name="cell.key"
+          >
+            <div class="headerdiv">
+              <span>{{ cell.value }}</span>
+              <div
+                v-if="cell.showfilter"
+                ref="showfilter"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper" @click="cilckfilter($event)">
+                  <i class="filter-caret filtertop"></i>
+                  <i class="filterbottom"></i>
+                </span>
+                <div v-if="filters" class="filters">
+                  <ul>
+                    <li v-for="(item, Index) in filteritems" :key="Index">
+                      <input type="checkbox" name id />
+                      <span>{{ item }}</span>
+                    </li>
+                    <li>
+                      <span @click="resetfilter($event)">重置</span>
+                      <span @click="surefilter($event)">确认</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                v-if="cell.showsort"
+                ref="showsort"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper">
+                  <i
+                    class="sort-caret ascending"
+                    @click="clicksort($event)"
+                  ></i>
+                  <i
+                    class="sort-caret descending"
+                    @click="clicksort($event)"
+                  ></i>
+                </span>
               </div>
             </div>
-            <div
-              v-if="cell.showsort"
-              ref="showsort"
-              style="display: inline-block"
-            >
-              <span class="caret-wrapper">
-                <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                <i class="sort-caret descending" @click="clicksort($event)"></i>
-              </span>
-            </div>
-          </div>
-        </th>
-        <th v-if="ShowOperation" class="ShowOperation" rowspan="2">
-          <span>操作</span>
-        </th>
-      </tr>
-      <!-- 二级表头 -->
-      <tr v-if="showgroup">
-        <th v-for="(cell, colIndex) in secondary" :key="colIndex">
-          <div>
-            <span>{{ cell.value }}</span>
-            <div
-              v-if="cell.showfilter"
-              ref="showfilter"
-              style="display: inline-block"
-            >
-              <span class="caret-wrapper" @click="cilckfilter($event)">
-                <i class="filter-caret filtertop"></i>
-                <i class="filterbottom"></i>
-              </span>
-              <div v-if="filters" class="filters">
-                <ul>
-                  <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                  <li v-for="(item, Index) in filteritems" :key="Index">
-                    <input type="checkbox" name id />
-                    <span>{{ item }}</span>
-                  </li>
-                  <li>
-                    <span @click="resetfilter($event)">重置</span>
-                    <span @click="surefilter($event)">确认</span>
-                  </li>
-                </ul>
+          </th>
+        </tr> -->
+        <!-- 多表头 -->
+        <!-- <tr v-if="showgroup" ref="primarytr">
+          <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
+            <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
+          </th>
+          <th v-for="(cell, colIndex) in primary" :key="colIndex">
+            <div class="headerdiv">
+              <span v-if="cell.groupname">{{ cell.groupname }}</span>
+              <span v-else>{{ cell.value }}</span>
+              <div
+                v-if="cell.showfilter"
+                ref="showfilter"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper" @click="cilckfilter($event)">
+                  <i class="filter-caret filtertop"></i>
+                  <i class="filterbottom"></i>
+                </span>
+                <div v-if="filters" class="filters">
+                  <ul>
+                    <li v-for="(item, Index) in filteritems" :key="Index">
+                      <input type="checkbox" name id />
+                      <span>{{ item }}</span>
+                    </li>
+                    <li>
+                      <span @click="resetfilter($event)">重置</span>
+                      <span @click="surefilter($event)">确认</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                v-if="cell.showsort"
+                ref="showsort"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper">
+                  <i
+                    class="sort-caret ascending"
+                    @click="clicksort($event)"
+                  ></i>
+                  <i
+                    class="sort-caret descending"
+                    @click="clicksort($event)"
+                  ></i>
+                </span>
               </div>
             </div>
-            <div
-              v-if="cell.showsort"
-              ref="showsort"
-              style="display: inline-block"
-            >
-              <span class="caret-wrapper">
-                <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                <i class="sort-caret descending" @click="clicksort($event)"></i>
-              </span>
+          </th>
+          <th v-if="ShowOperation" class="ShowOperation" rowspan="2">
+            <span>操作</span>
+          </th>
+        </tr> -->
+        <!-- 二级表头 -->
+        <!-- <tr v-if="showgroup">
+          <th v-for="(cell, colIndex) in secondary" :key="colIndex">
+            <div>
+              <span>{{ cell.value }}</span>
+              <div
+                v-if="cell.showfilter"
+                ref="showfilter"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper" @click="cilckfilter($event)">
+                  <i class="filter-caret filtertop"></i>
+                  <i class="filterbottom"></i>
+                </span>
+                <div v-if="filters" class="filters">
+                  <ul>
+                    <li v-for="(item, Index) in filteritems" :key="Index">
+                      <input type="checkbox" name id />
+                      <span>{{ item }}</span>
+                    </li>
+                    <li>
+                      <span @click="resetfilter($event)">重置</span>
+                      <span @click="surefilter($event)">确认</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                v-if="cell.showsort"
+                ref="showsort"
+                style="display: inline-block"
+              >
+                <span class="caret-wrapper">
+                  <i
+                    class="sort-caret ascending"
+                    @click="clicksort($event)"
+                  ></i>
+                  <i
+                    class="sort-caret descending"
+                    @click="clicksort($event)"
+                  ></i>
+                </span>
+              </div>
             </div>
-          </div>
-        </th>
-      </tr>
-    </thead>
-  </table>
+          </th>
+        </tr> -->
+      </thead>
+    </table>
+  </div>
 </template>
  
 <script>
+// import MyTableTr from "./components/my-table-tr";
+// import MyTableTd from "./components/my-table-td";
 export default {
   name: "my-table-tr",
+  components:{
+    // MyTableTr,
+    // MyTableTd
+  },
   data() {
     return {
       setwidth: "auto",
@@ -165,6 +232,10 @@ export default {
       default: 42,
     },
     ShowCheckbox: {
+      type: Boolean,
+      default: false,
+    },
+    ShowOperation: {
       type: Boolean,
       default: false,
     },

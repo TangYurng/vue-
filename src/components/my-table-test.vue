@@ -1,33 +1,41 @@
 <template>
   <div class="table" ref="mytable">
     <div class="content">
+      <!-- 自定义内容 -->
+      <div class="hidden-columns" ref="hiddenColumns"><slot></slot></div>
       <!-- 中间内容 -->
-      <div class="tab-scroll">
+      <div class="tab-scroll-header">
         <div class="header">
-          <my-table-header ref="tabHeader"></my-table-header>
+          <!-- 表头 header -->
+          <my-table-header1 ref="tableHeader" :header="header">
+          </my-table-header1>
         </div>
+      </div>
+      <div class="tab-scroll-body">
         <div class="body">
-          <my-table-body ref="tabBody"></my-table-body>
+          <!-- 表内容 -->
+          <my-table-body1 :header="header" :body="body">
+          </my-table-body1>
         </div>
       </div>
       <!-- 左边固定 -->
-      <div class="tab-fixed-left" ref="leftFixedHeader">
+      <!-- <div class="tab-fixed-left" ref="leftFixedHeader">
         <div class="leftheader">
           <my-table-header fixed="left"></my-table-header>
         </div>
-        <div class="leftbody" ref="leftFixedBody">
+        <div class="leftbody">
           <my-table-body fixed="left"></my-table-body>
         </div>
-      </div>
+      </div>  -->
       <!-- 右边固定 -->
-      <div class="tab-fixed-right" ref="rightFixedHeader">
+      <!-- <div class="tab-fixed-right" ref="rightFixedHeader">
         <div class="rightheader">
           <my-table-header fixed="right"></my-table-header>
         </div>
-        <div class="rightbody" ref="rightFixedHeader">
+        <div class="rightbody" >
           <my-table-body fixed="right"></my-table-body>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -35,13 +43,13 @@
 
     
 <script>
-import MyTableHeader from "./my-table-header.vue";
-import MyTableBody from "./my-table-body.vue";
+import MyTableHeader1 from "./my-table-header1";
+import MyTableBody1 from "./my-table-body1";
 export default {
   name: "MyTable",
   components: {
-    MyTableHeader,
-    MyTableBody,
+    MyTableHeader1,
+    MyTableBody1,
   },
   data() {
     return {
