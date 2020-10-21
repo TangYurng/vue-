@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="tab-detail">
-      <div class="tab-head">
+      <!-- <div class="tab-head">
         <div class="tab-head-left">
           <ul class="tab-head-ul">
             <li class="tab-head-li">
@@ -9,7 +9,7 @@
             </li>
             <li class="tab-head-li">
               <label class="tab-head-record headcolor">共</label>
-              <label class="record-num">{{RecordNum}}</label>
+              <label class="record-num">{{ RecordNum }}</label>
               <label class="tab-head-record headcolor">记录</label>
             </li>
           </ul>
@@ -38,19 +38,18 @@
             </li>
           </ul>
         </div>
-      </div>
+      </div> -->
       <!-- ShowCheckbox:显示多选框  ,stripe:显示斑马纹  :isgroup="isgroup"-->
       <my-table
-        :header="header"
-        :body="body"
+        :type="type"
+        :header="header1"
+        :body="body1"
         :ShowCheckbox="ShowCheckbox"
         :stripe="stripe"
         :resize="resize"
         :isgroup="isgroup"
+        ref="mytable"
       >
-    <!-- <template slot-scope="scope">
-        <span style="margin-left: 10px">{{ }}</span>
-    </template> -->
       </my-table>
     </div>
   </div>
@@ -70,16 +69,34 @@ export default {
   data() {
     return {
       RecordNum: 263,
-      ShowCheckbox: true,
+      ShowCheckbox: false,
       stripe: true,
-      resize: true,
+      resize: false,
+      //2：body的表格
+      type:'2',
       // header属性 fixed:true和right;showfilter:true;showsort:true
       header: [
-        { value: "状态", width: 75, key: "value1" ,showfilter:true, fixed:true},
-        { value: "入库通知单", width: 165, key: "value2" , fixed:true},
-        { value: "合同编号", width: 112, key: "value3" ,showsort:true},
+         {
+          value: "编号",
+          key: "id", 
+          width: 100,
+          fixed: true,
+          type:'render',
+          render:(row, column, index) =>{
+            return (<button type="primary" size="small">click</button>)
+          },
+        },
+        {
+          value: "状态",
+          width: 75,
+          key: "value1",
+          showfilter: true,
+          fixed: true,
+        },
+        { value: "入库通知单", width: 165, key: "value2" },
+        { value: "合同编号", width: 112, key: "value3"},
         { value: "采购订单", width: 157, key: "value4" },
-        { value: "承运商", width: 85, key: "value5", groupname: "人员"},
+        { value: "承运商", width: 85, key: "value5", groupname: "人员" },
         {
           value: "客户",
           width: 172,
@@ -92,7 +109,23 @@ export default {
         { value: "押运员	", width: 110, key: "value10", groupname: "押运员" },
         { value: "押运员1	", width: 110, key: "value11", groupname: "押运员" },
         { value: "押运员2	", width: 110, key: "value12", groupname: "押运员" },
-        { value: "押运员3	", width: 110, key: "value13", groupname: "押运员", fixed:'right'},
+        {
+          value: "押运员3	",
+          width: 110,
+          key: "value13",
+          //  fixed: "right",
+          groupname: "押运员",
+        },
+        {
+          value: "操作",
+          key: "action", //slot相当于key
+          width: 100,
+          // fixed: "right",
+          type:'render',
+          render:(row, column, index) =>{
+            return (<button type="primary" size="small">查看</button>)
+          },
+        },
       ],
       body: [
         {
@@ -187,8 +220,77 @@ export default {
         },
       ],
       isgroup: [
-        { groupname: "押运员", groupkey: "yayun" },
-        { groupname: "人员", groupkey: "man" },
+        // { groupname: "押运员", groupkey: "yayun" },
+        // { groupname: "人员", groupkey: "man" },
+      ],
+      header1:[
+        {
+          key:"customer",
+          value:"客户",
+          location:"body",
+          width:200
+        },
+        {
+          key:"jhxhd",
+          value:"计划卸货点",
+          location:"body",
+          width:200
+        },
+        {
+          key:"carrier",
+          value:"承运商",
+          location:"body",
+          width:150
+        },
+        {
+          key:"car",
+          value:"车辆",
+          location:"body",
+          width:100
+        },
+        {
+          key:"option",
+          value:"操作",
+          location:"body",
+          width:100
+        },
+        {
+          key:"data",
+          name:"日期",
+          location:"head"
+        },
+        {
+          key:"orderId",
+          name:"订单号",
+          location:"head"
+        },
+        {
+          key:"trackingId",
+          name:"运单号",
+          location:"head"
+        },
+      ],
+      body1:[
+        {
+          data:"2020-03-02",
+          orderId:"To20200302102003",
+          trackingId:"To20200302000003",
+          customer:"浙江宁波公司",
+          jhxhd:"浙江卸货地",
+          carrier:"宁波运输",
+          car:"翼rz610挂",
+          option:"撤销审批",
+        },
+        {
+          data:"2020-03-03",
+          orderId:"To20200302102004",
+          trackingId:"To20200302000004",
+          customer:"中石化公司",
+          jhxhd:"中海卸货地",
+          carrier:"广东运输",
+          car:"翼rz610挂",
+          option:"撤销审批",
+        },
       ],
     };
   },
@@ -199,7 +301,8 @@ export default {
 
   methods: {},
 
-  mounted() {},
+  mounted() {
+  },
 };
 </script>
 
@@ -221,6 +324,7 @@ a {
 }
 .wrap {
   width: 1500px;
+  /* width: 100%; */
   height: 200px;
   margin: 0 auto;
 }

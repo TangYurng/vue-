@@ -1,21 +1,61 @@
 <template>
   <div class="table" ref="mytable">
     <div class="content">
-      <!-- 自定义内容 -->
-      <div class="hidden-columns" ref="hiddenColumns"><slot></slot></div>
       <!-- 中间内容 -->
       <div class="tab-scroll-header">
         <div class="header">
           <!-- 表头 header -->
-          <my-table-header1 ref="tableHeader" :header="header">
-          </my-table-header1>
+          <my-table-header ref="tableHeader" :header="header">
+          </my-table-header>
         </div>
       </div>
       <div class="tab-scroll-body">
         <div class="body">
           <!-- 表内容 -->
-          <my-table-body1 :header="header" :body="body">
-          </my-table-body1>
+          <!-- 拆分困难！！！，解决slot爷孙传值的问题！！！！！！ -->
+          <my-table-body :header="header" :body="body">
+            <template v-if="col.slot" slot-scope="{row,col,index}">
+              <slot name="col.slot" :row="row" :col="col" :index="index"></slot>
+            </template>
+          </my-table-body>
+          <!-- <table
+            border="0"
+            :class="{ isstripe: stripe }"
+            :style="{ width: setwidth }"
+            ref="tabbody"
+          >
+            <colgroup class="bodycg">
+              <col
+                v-for="(col, index) in header"
+                :key="index"
+                :width="col.width || ''"
+              />
+            </colgroup>
+            <tbody>
+              <tr
+                v-for="(row, index) in body"
+                :key="index"
+                :style="{ height: BodyHeight + 'px' }"
+                ref="bodytr"
+              >
+                <td v-for="col in header" :key="col.key">
+                  <div>
+                    <template v-if="col.slot">
+                      <slot
+                        :name="col.slot"
+                        :row="row"
+                        :col="col"
+                        :index="index"
+                      ></slot>
+                    </template>
+                    <template v-else>
+                      <span :name="col.key">{{ row[col.key] }}</span>
+                    </template>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table> -->
         </div>
       </div>
       <!-- 左边固定 -->
@@ -43,16 +83,20 @@
 
     
 <script>
-import MyTableHeader1 from "./my-table-header1";
-import MyTableBody1 from "./my-table-body1";
+import MyTableHeader from "./my-table-header";
+import MyTableBody from "./my-table-body";
 export default {
   name: "MyTable",
+
   components: {
-    MyTableHeader1,
-    MyTableBody1,
+    MyTableHeader,
+    MyTableBody,
   },
+
   data() {
+    // const store = new TableStore(this);
     return {
+      // store,
       setwidth: "auto",
       leftsetwidth: "auto",
       rightsetwidth: "auto",
@@ -448,8 +492,15 @@ export default {
       rightbody[0].style.right = -currentScrollTop + "px";
     },
   },
-  created() {},
+  created() {
+    //???
+    // this.tableId = `el-table_${tableIdSeed}`
+  },
   mounted() {
+    //调用 updateColumns触发header，body的二次render更新，标记monted完成
+    // this.store.updateColumns()
+    // this.$ready = true
+
     this.init();
     this.initGroup();
     // 斑马纹
@@ -475,6 +526,7 @@ export default {
     });
   },
   watch: {
+    //默认首次加载页面不执行，当值发生改变才执行
     data() {
       this.init();
       this.initTableWidth();
@@ -485,6 +537,14 @@ export default {
       },
       deep: true,
     },
+    // data:{
+    //存放store，为body获取data渲染数据
+    // immediate:true,  //页面首次加载立即执行
+    // handler(value){
+    //执行的代码
+    // this.store.commit('setData',value);
+    // }
+    // }
   },
 };
 </script>

@@ -1,359 +1,120 @@
 <template>
   <div class="table" ref="mytable">
-    <div class="content">
+    <div class="content" v-if="type=='1'">
       <div class="tab-fixed-left">
-        <div class="leftheader">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :style="{width: leftsetwidth}"
-            ref="tabheader"
-          >
-            <colgroup>
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in fixedheader"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <thead>
-              <tr :style="{height: HeaderHeight + 'px'}">
-                <th v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-                </th>
-                <th v-for="(cell, colIndex) in fixedheader" :key="colIndex">
-                  <div class="headerdiv">
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="leftbody">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :class="{'isstripe':stripe}"
-            :style="{width: leftsetwidth}"
+        <div class="tab-content" v-if="fixedheader.length">
+          <div class="leftheader">
+            <my-table-header
+             :type="type"
+              fixed="left"
+              :header="header"
+              :body="body"
+              :ShowCheckbox="ShowCheckbox"
+              :stripe="stripe"
+              :resize="resize"
+              :isgroup="isgroup"
+              ref="mytableheader"
+            ></my-table-header>
+          </div>
+          <div class="leftbody">
+             <my-table-body
+              :type="type"
+             fixed="left"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
             ref="tabbody"
-          >
-            <colgroup>
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in fixedheader"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <tbody>
-              <tr
-                v-for="(row, rowIndex) in fixedbody"
-                :key="rowIndex"
-                :style="{height: BodyHeight + 'px'}"
-                ref="bodytr"
-              >
-                <td v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" @click="checkedItem" :checked="CheckedItem" />
-                </td>
-                <td v-for="(cell,colIndex) in row" :key="colIndex">
-                  <div>
-                    <span>{{cell}}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          ></my-table-body>
+          </div>
         </div>
       </div>
       <div class="tab-scroll">
         <div class="header">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :style="{width: setwidth}"
-            ref="tabheader"
+          <my-table-header
+           :type="type"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
+            ref="mytableheader"
           >
-            <colgroup class="headercg">
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in header"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <thead>
-              <!-- 正常表头 -->
-              <tr :style="{height: HeaderHeight + 'px'}" v-if="!showgroup" ref="headertr">
-                <th v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-                </th>
-                <th v-for="(cell, colIndex) in header" :key="colIndex" :name="cell.key">
-                  <div class="headerdiv">
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-              <!-- 一级表头 -->
-              <tr v-if="showgroup" ref="primarytr">
-                <th v-if="ShowCheckbox" class="checkbox" rowspan="2">
-                  <input type="checkbox" @click="checkedAll" :checked="CheckedALL" />
-                </th>
-                <th v-for="(cell, colIndex) in primary" :key="colIndex">
-                  <div class="headerdiv">
-                    <span v-if="cell.groupname">{{cell.groupname}}</span>
-                    <span v-else>{{cell.value}}</span>
-                     <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-              <!-- 二级表头 -->
-              <tr v-if="showgroup">
-                <th v-for="(cell,colIndex) in secondary" :key="colIndex">
-                  <div>
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <!-- <li v-for="(item,Index) in body" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item[cell.key] |filterkey}}</span>
-                          </li>-->
-                          <li v-for="(item,Index) in filteritems" :key="Index">
-                            <input type="checkbox" name id />
-                            <span>{{item}}</span>
-                          </li>
-                          <li>
-                            <span @click="resetfilter($event)">重置</span>
-                            <span @click="surefilter($event)">确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-          </table>
+          </my-table-header>
         </div>
         <div class="body">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :class="{'isstripe':stripe}"
-            :style="{width: setwidth}"
+          <my-table-body
+           :type="type"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
             ref="tabbody"
-          >
-            <colgroup class="bodycg">
-              <col v-if="ShowCheckbox" style="width: 36px;" />
-              <col
-                v-for="(cell, colIndex) in header"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <tbody>
-              <tr
-                v-for="(row, rowIndex) in body"
-                :key="rowIndex"
-                :style="{height: BodyHeight + 'px'}"
-                ref="bodytr"
-              >
-                <td v-if="ShowCheckbox" class="checkbox">
-                  <input type="checkbox" :checked="CheckedItem" @click="checkedItem" />
-                </td>
-                <td v-for="(cell,colIndex) in header" :key="colIndex">
-                  <div>
-                    <span>{{row[cell.key]}}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          ></my-table-body>
         </div>
       </div>
       <div class="tab-fixed-right">
-        <div class="rightheader">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :style="{width: rightsetwidth}"
-            ref="tabheader"
-          >
-            <colgroup>
-              <col
-                v-for="(cell, colIndex) in rfixedheader"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <thead>
-              <tr :style="{height: HeaderHeight + 'px'}">
-                <th v-for="(cell, colIndex) in rfixedheader" :key="colIndex">
-                  <div class="headerdiv">
-                    <span>{{cell.value}}</span>
-                    <div v-if="cell.showfilter" ref="showfilter" style="display:inline-block">
-                      <span class="caret-wrapper" @click="cilckfilter($event)">
-                        <i class="filter-caret filtertop"></i>
-                        <i class="filterbottom"></i>
-                      </span>
-                      <div v-if="filters" class="filters">
-                        <ul>
-                          <li>
-                            <input type="checkbox" name id />
-                            <span>已确认</span>
-                          </li>
-                          <li>
-                            <input type="checkbox" name id />
-                            <span>已确认</span>
-                          </li>
-                          <li>
-                            <input type="checkbox" name id />
-                            <span>已确认</span>
-                          </li>
-                          <li>
-                            <span>重置</span>
-                            <span>确认</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div v-if="cell.showsort" ref="showsort" style="display:inline-block">
-                      <span class="caret-wrapper">
-                        <i class="sort-caret ascending" @click="clicksort($event)"></i>
-                        <i class="sort-caret descending" @click="clicksort($event)"></i>
-                      </span>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="rightbody">
-          <table
-            cellspacing="0"
-            cellpadding="0"
-            border="0"
-            :class="{'isstripe':stripe}"
-            :style="{width: rightsetwidth}"
+        <div class="tab-content" v-if="rfixedheader.length">
+          <div class="rightheader">
+            <my-table-header
+             :type="type"
+              fixed="right"
+              :header="header"
+              :body="body"
+              :ShowCheckbox="ShowCheckbox"
+              :stripe="stripe"
+              :resize="resize"
+              :isgroup="isgroup"
+              ref="mytableheader"
+            ></my-table-header>
+          </div>
+          <div class="rightbody">
+             <my-table-body
+              :type="type"
+             fixed="right"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
             ref="tabbody"
+          ></my-table-body>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content" v-else-if="type=='2'">
+      <div class="tab-scroll">
+        <div class="header">
+          <my-table-header
+            :type="type"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
+            ref="mytableheader"
           >
-            <colgroup>
-              <col
-                v-for="(cell, colIndex) in rfixedheader"
-                :key="colIndex"
-                :style="{width: cell.width+'px'}"
-              />
-            </colgroup>
-            <tbody>
-              <tr
-                v-for="(row, rowIndex) in rfixedbody"
-                :key="rowIndex"
-                :style="{height: BodyHeight + 'px'}"
-                ref="bodytr"
-              >
-                <td v-for="(cell,colIndex) in row" :key="colIndex">
-                  <div>
-                    <span>{{cell}}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          </my-table-header>
+        </div>
+        <div class="body">
+          <my-table-body
+            :type="type"
+            :header="header"
+            :body="body"
+            :ShowCheckbox="ShowCheckbox"
+            :stripe="stripe"
+            :resize="resize"
+            :isgroup="isgroup"
+            ref="tabbody"
+          ></my-table-body>
         </div>
       </div>
     </div>
@@ -361,6 +122,10 @@
 </template>
 
 <script>
+import header from "../iview/src/components/table/header";
+import MyTableHeader from "./my-table-header.vue";
+import MyTableBody from "./my-table-body.vue";
+// import render from "./render.js";
 export default {
   name: "MyTable",
   data() {
@@ -379,7 +144,13 @@ export default {
       CheckedALL: false,
       CheckedItem: false,
       filteritems: [],
+      fixed: false,
     };
+  },
+  components: {
+    // render,
+    MyTableHeader,
+    MyTableBody
   },
   props: {
     header: {
@@ -408,6 +179,10 @@ export default {
       type: Number,
       default: 42,
     },
+    type: {
+      type: String,
+      default: '',
+    },
     ShowCheckbox: {
       type: Boolean,
       default: false,
@@ -433,35 +208,45 @@ export default {
     },
   },
   methods: {
+    //初始化数据
+    rebuilddata() {
+      console.log("初始化数据");
+    },
     // 表格初始化宽度
     initTableWidth() {
       let allwidth = 0,
         leftallwidth = 0,
         rightallwidth = 0;
-      if (this.ShowCheckbox) {
-        let num = 0;
-        this.header.forEach((el) => {
-          if (!el.fixed) {
-            num++;
-          }
-        });
-        allwidth += 35;
-        leftallwidth += 35;
-        //判断是否显示左右固定列
-        if (num >= this.header.length) {
-          document.getElementsByClassName("tab-fixed-left")[0].style.display =
-            "none";
-          document.getElementsByClassName("tab-fixed-right")[0].style.display =
-            "none";
+      // if (this.ShowCheckbox) {
+      let leftnum = 0,
+        rightnum = 0,
+        num = 0;
+      this.header.forEach((el) => {
+        if (el.fixed || el.fixed == "left") {
+          this.fixed = true;
+          leftnum++;
+        } else if (el.fixed == "right") {
+          this.fixed = true;
+          rightnum++;
         } else {
-          document.getElementsByClassName("tab-fixed-left")[0].style.display =
-            "block";
-          document.getElementsByClassName("tab-fixed-right")[0].style.display =
-            "block";
+          num++;
         }
-        document.getElementsByClassName("tab-fixed-left")[0].style.display =
-          "none";
-      }
+      });
+      allwidth += 35;
+      leftallwidth += 35;
+      //判断是否显示左右固定列
+      // if (num >= this.header.length && leftnum != 0 && rightnum != 0) {
+      //   document.getElementsByClassName("tab-fixed-left")[0].style.visibility =
+      //     "hidden";
+      //   document.getElementsByClassName("tab-fixed-right")[0].style.visibility =
+      //     "hidden";
+      // } else if (rightnum == 0 && leftnum != 0) {
+      //   document.getElementsByClassName("tab-fixed-right")[0].style.visibility =
+      //     "hidden";
+      // } else if (rightnum != 0 && leftnum == 0) {
+      //   document.getElementsByClassName("tab-fixed-left")[0].style.visibility =
+      //     "hidden";
+      // }
       this.header.forEach((el) => {
         allwidth += el.width;
       });
@@ -548,42 +333,57 @@ export default {
           ) {
             headerkey.push(item.key);
             fheader.push(item);
-            document.getElementsByClassName("tab-fixed-left")[0].style.display =
-              "none";
-            // flag = true;
           } else if (item.fixed == "right") {
             rightkey.push(item.key);
             frheader.push(item);
           }
         }
       });
-      // 当有固定列的时候，当显示多选框的时候，中间input的隐藏
-      // if (flag) {
-      //   if (this.ShowCheckbox) {
-      //     let trs = document.querySelectorAll(".tab-scroll tr");
-      //     trs.forEach((el) => {
-      //       el.cells[0].firstChild.style.display = "none";
-      //     });
-      //   }
-      // }
       setTimeout(() => {
         Array.from(this.body).forEach((item) => {
           let data1 = [],
             data2 = [];
-          headerkey.forEach((el) => {
-            for (var al in item) {
-              if (al == el) {
-                data1.push(item[al]);
+          let bodykey = [];
+          for (var al in item) {
+            bodykey.push(al);
+          }
+          if (headerkey.length) {
+            headerkey.forEach((el) => {
+              if (bodykey.indexOf(el) != -1) {
+                for (var al in item) {
+                  if (al == el) {
+                    data1.push(item[al]);
+                  }
+                }
+              } else {
+                //自定义列
+                for (var i = 0; i < this.header.length; i++) {
+                  if (this.header[i].key == el) {
+                    data1.push(this.header[i].render);
+                  }
+                }
               }
-            }
-          });
-          rightkey.forEach((el) => {
-            for (var al in item) {
-              if (al == el) {
-                data2.push(item[al]);
+            });
+            // console.log(data1);
+          }
+          if (rightkey != []) {
+            rightkey.forEach((el) => {
+              if (bodykey.indexOf(el) != -1) {
+                for (var al in item) {
+                  if (al == el) {
+                    data2.push(item[al]);
+                  }
+                }
+              } else {
+                //自定义列
+                for (var i = 0; i < this.header.length; i++) {
+                  if (this.header[i].key == el) {
+                    data2.push(this.header[i].render);
+                  }
+                }
               }
-            }
-          });
+            });
+          }
           fbody.push(data1);
           frbody.push(data2);
         });
@@ -722,16 +522,24 @@ export default {
       let currentScrollTop = e.target.scrollLeft,
         maxScrollTop = e.target.scrollWidth - e.target.offsetWidth;
       if (currentScrollTop == 0) {
-        document.getElementsByClassName("tab-fixed-left")[0].style.display =
-          "none";
+        document.getElementsByClassName("tab-fixed-left")[0].style.visibility =
+          "hidden";
       } else if (currentScrollTop == maxScrollTop) {
-        document.getElementsByClassName("tab-fixed-right")[0].style.display =
-          "none";
-      } else {
-        document.getElementsByClassName("tab-fixed-left")[0].style.display =
-          "block";
-        document.getElementsByClassName("tab-fixed-right")[0].style.display =
-          "block";
+        document.getElementsByClassName("tab-fixed-right")[0].style.visibility =
+          "hidden";
+      }
+      else if (this.rfixedheader.length == 0) {
+        document.getElementsByClassName("tab-fixed-right")[0].style.visibility =
+          "hidden";
+      } else if (this.fixedheader.length == 0) {
+        document.getElementsByClassName("tab-fixed-left")[0].style.visibility =
+          "hidden";
+      }
+      else {
+        document.getElementsByClassName("tab-fixed-left")[0].style.visibility =
+          "visible";
+        document.getElementsByClassName("tab-fixed-right")[0].style.visibility =
+          "visible";
       }
       if (this.ShowCheckbox) {
         let num = 0;
@@ -742,8 +550,9 @@ export default {
         });
         //判断是否显示左右固定列
         if (num == 0) {
-          document.getElementsByClassName("tab-fixed-left")[0].style.display =
-            "none";
+          document.getElementsByClassName(
+            "tab-fixed-left"
+          )[0].style.visibility = "hidden";
         }
       }
       let leftbody = document.getElementsByClassName("tab-fixed-left");
@@ -752,18 +561,12 @@ export default {
       rightbody[0].style.right = -currentScrollTop + "px";
     },
   },
-  created() {},
+ 
   mounted() {
+    this.rebuilddata();
+
     this.init();
-    this.initGroup();
-    // 斑马纹
-    if (this.stripe) {
-      this.$refs.bodytr.forEach((item, index) => {
-        if (index % 2) {
-          item.style.background = "#F6F7FB";
-        }
-      });
-    }
+    this.$refs.mytableheader.initTableWidth();
     if (this.$refs.mytable) {
       this.initTableWidth();
       window.addEventListener("resize", this.initTableWidth);

@@ -1,8 +1,4 @@
-/**
-* @file
-* @author 何文林
-* @date 2017/9/26
-*/
+
 <template>
   <div class="checkwramp" :class="isTrue ? 'active' : ''">
     <i class="checkbox iconfont">{{isTrue ? '&#xe7a1;' : ''}}</i>

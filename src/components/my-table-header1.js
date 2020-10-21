@@ -16,7 +16,6 @@ export default {
                         {
                             this.header.map((col, colIndex) => (<col {...{style:{width:col.width}}}></col>))
                         }
-
                     </colgroup>
                     <thead>
                         <tr>

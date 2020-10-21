@@ -1,3 +1,4 @@
+<!-- 自定义列需手动新增数据 在header里，body的数据可以通过代码新增 -->
 <template>
   <div class="wrap">
     <!-- 绑定主体内容data， -->
@@ -10,24 +11,37 @@
       :resize="resize"
       :isgroup="isgroup"
     >
-          <my-table-item type="selection">选择</my-table-item>
-          <my-table-item v-for="(item, index) in header" :key="index">{{
+          <!-- <my-table-item type="selection" value="操作">
+            <template>
+              <input type="checkbox" name="" id="">
+            </template>
+          </my-table-item> -->
+          <!-- <my-table-item v-for="(item, index) in header" :key="index">{{
             item.value
-          }}</my-table-item>
-          <my-table-item width="100px" fixed="right" value="操作"> </my-table-item>
-
+          }}</my-table-item> -->
+          <!-- <my-table-item width="100px" fixed="right" value="操作"> 
+            <template>
+              <span>删除</span>
+            </template>
+          </my-table-item> -->
+          <!-- <template v-slot:action="{row,col,index}"> -->
+          <template #action='{index}'>
+            <button>编辑{{index}}</button>
+            <button>删除</button>
+            <button>新增</button>
+          </template>
     </my-table-test>
   </div>
 </template>
 
 <script>
 import MyTableTest from "../components/my-table-test";
-import MyTableItem from "../components/my-table-item";
+// import MyTableItem from "../components/my-table-item";
 export default {
   name: "Two",
   components: {
     MyTableTest,
-    MyTableItem,
+    // MyTableItem,
   },
   data() {
     return {
@@ -67,9 +81,15 @@ export default {
           key: "value13",
           groupname: "押运员",
         },
+        {
+          value:"操作",
+          slot:"action",  //slot相当于key 
+          width: "100px",
+        }
       ],
       body: [
         {
+          id:'1',
           value1: "已确认",
           value2: "GP201903230000016",
           value3: "003",
@@ -85,6 +105,7 @@ export default {
           value13: "刘航",
         },
         {
+          id:'2',
           value1: "已完成",
           value2: "GP201903230000017",
           value3: "004",
@@ -100,6 +121,7 @@ export default {
           value13: "刘航",
         },
         {
+          id:'3',
           value1: "已结束",
           value2: "GP201903230000017",
           value3: "008",
@@ -115,6 +137,7 @@ export default {
           value13: "刘航",
         },
         {
+          id:'4',
           value1: "已完成",
           value2: "GP201903230000017",
           value3: "006",
@@ -130,6 +153,7 @@ export default {
           value13: "刘航",
         },
         {
+          id:'5',
           value1: "已结束",
           value2: "GP201903230000017",
           value3: "001",
@@ -145,6 +169,7 @@ export default {
           value13: "刘航",
         },
         {
+          id:'6',
           value1: "已确认",
           value2: "GP201903230000017",
           value3: "000",
@@ -175,7 +200,7 @@ export default {
 
 <style scoped>
 .wrap {
-  width: 1500px;
+  width: 1600px;
   height: 200px;
   margin: 0 auto;
 }
